@@ -1,0 +1,39 @@
+<!-- hot scan to edit at runtime -->
+<configuration scan="true" scanPeriod="1 minutes">
+	<property name="proname" value="imserver" /> <!-- 项目名称, 每个项目请更改自己对应的项目名称 -->
+	<!-- <property name="logDir" value="../logs/${proname}" /> -->		<!-- 项目上一级路径 -->
+	<property name="logDir" value="logs/${proname}" /> <!-- 项目相对路径 -->
+	<!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+	<property name="patternText" value="[%d{yyyy-MM-dd HH:mm:ss.SSS} %level.%thread %logger{85} %file:%line]: %msg%n"/>
+	
+	<appender name="rollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<!-- log file name -->
+			<FileNamePattern>${logDir}/clever-log-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+			<MaxHistory>30</MaxHistory>
+			<MaxFileSize>100MB</MaxFileSize>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>${patternText}</pattern>
+		</encoder>
+	</appender>
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>${patternText}</Pattern>
+		</layout>
+	</appender>
+
+	<root level="info">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="rollingFile" />
+	</root>
+	<logger name="com.qxiu" additivity="false" level="info">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="rollingFile" />
+	</logger>
+	<logger name="com.common" additivity="false" level="info">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="rollingFile" />
+	</logger>
+</configuration>

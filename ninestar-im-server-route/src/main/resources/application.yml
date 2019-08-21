@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: serverroute
+server:
+  port: 8899
