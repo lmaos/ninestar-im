@@ -37,6 +37,11 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>org.ninestar.im</groupId>
+				<artifactId>ninestar-im-server-core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>io.netty</groupId>
 				<artifactId>netty-all</artifactId>
 				<version>4.1.38.Final</version>

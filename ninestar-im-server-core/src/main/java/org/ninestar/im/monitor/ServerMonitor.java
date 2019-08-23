@@ -123,6 +123,10 @@ public class ServerMonitor<T> {
 		thread.interrupt();
 	}
 
+	public void remove(ServerMonitorBox<T> box) {
+		this.boxs.remove(box.getBoxId());
+	} 
+	
 	public static void main(String[] args) throws InterruptedException {
 		ServerMonitor x = new ServerMonitor<>(1000);
 		x.createBoxAndPutMonitor(100, 1000);
