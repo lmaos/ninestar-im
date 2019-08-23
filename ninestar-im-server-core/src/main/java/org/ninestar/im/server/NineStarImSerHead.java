@@ -8,10 +8,11 @@ public interface NineStarImSerHead {
 	
 	public String getUri();
 
-	public String getContentType() ;
+	public String getContentType();
 
-	public String getCharsetName() ;
+	public String getCharsetName();
 
-	public String getSource() ;
+	public String getSource();
+	
 	
 }
