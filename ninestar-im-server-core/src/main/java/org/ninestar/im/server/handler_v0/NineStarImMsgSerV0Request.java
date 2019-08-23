@@ -24,7 +24,7 @@ public class NineStarImMsgSerV0Request implements NineStarImSerRequest {
 	}
 
 	@Override
-	public NineStarImSerHead getHead() {
+	public NineStarImMsgSerV0ReqHead getHead() {
 		return head;
 	}
 

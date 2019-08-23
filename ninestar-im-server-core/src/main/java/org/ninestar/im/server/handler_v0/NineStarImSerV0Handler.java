@@ -19,6 +19,8 @@ public class NineStarImSerV0Handler {
 
 	@Autowired
 	private ControllerManage controllerManage;
+	@Autowired
+	private NineStarImMethodParamInjector nineStarImMethodParamInjector;
 
 	public void handler(MsgPackage msg, ChannelHandlerContext ctx, NineStarImSerHandler nsih) {
 		long msgPackId = msg.getMsgId();
@@ -32,8 +34,10 @@ public class NineStarImSerV0Handler {
 		String contentType = reqHead.getContentType();
 		// 请求头
 		NineStarImMsgSerV0Request request = new NineStarImMsgSerV0Request(msgPackId, reqHead, bodyBytes, msg);
+		
 		// ApplicationContext ac = nsih.getApplicationContext();
 		DynMethodParams dynParams = new DynMethodParams();
+		dynParams.setDynMethodParamInjector(nineStarImMethodParamInjector);
 		dynParams.put(new Class<?>[] { NineStarImMsgSerV0Request.class, NineStarImSerRequest.class }, request);
 		controllerManage.execute(uri, contentType, dynParams);
 	}

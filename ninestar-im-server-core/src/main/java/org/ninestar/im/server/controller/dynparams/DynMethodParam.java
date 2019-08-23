@@ -42,4 +42,12 @@ public class DynMethodParam {
 		return method;
 	}
 
+	public <T extends Annotation> T getParamAnn(Class<T> annType) {
+		return (T) paramAnns.get(annType);
+	}
+
+	public <T extends Annotation> T getMethodAnn(Class<T> annType) {
+		return (T) methodAnns.get(annType);
+	}
+
 }
