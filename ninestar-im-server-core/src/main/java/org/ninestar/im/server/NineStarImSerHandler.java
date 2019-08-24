@@ -52,13 +52,20 @@ public class NineStarImSerHandler extends SimpleChannelInboundHandler<MsgPackage
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, MsgPackage msg) throws Exception {
 		short version = msg.getVersion();
-		// 如果是心跳包
+		// 如果是心跳包 (客户端向服务器告知存活)
 		if (msg.isHeartbeatReqPack()) {
 			this.box.updateTime();
 			MsgPackage respMsg = MsgPackage.createHeartbeatRespPack(version);
 			ctx.writeAndFlush(respMsg);
 			return;
 		}
+		
+		// 如果是心跳应答 （服务器也可以向客户端发送心跳主动验证存活）
+		if (msg.isHeartbeatRespPack()) {
+			this.box.updateTime();
+			return;
+		}
+
 		// 协议版本解析
 		if (version == 0) {
 			handlerV0.handler(msg, ctx, this);

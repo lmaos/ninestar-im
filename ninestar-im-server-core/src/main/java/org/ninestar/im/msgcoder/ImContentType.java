@@ -1,4 +1,4 @@
-package org.ninestar.im.server.handler_v0;
+package org.ninestar.im.msgcoder;
 
 public class ImContentType {
 

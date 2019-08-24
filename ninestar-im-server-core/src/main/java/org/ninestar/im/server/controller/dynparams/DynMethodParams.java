@@ -45,7 +45,7 @@ public class DynMethodParams {
 	}
 
 	public DynMethodParams remove(Class<?> paramType) {
-		this.remove(paramType);
+		this.typeParams.remove(paramType);
 		return this;
 	}
 

@@ -1,13 +1,24 @@
-package org.ninestar.im.server.handler_v0;
+package org.ninestar.im.client.handle_v0;
 
+import org.ninestar.im.client.NineStarImCliHead;
 import org.ninestar.im.msgcoder.ImContentType;
-import org.ninestar.im.server.NineStarImSerHead;
 
 import com.alibaba.fastjson.JSONObject;
 
-public class NineStarImMsgSerV0ReqHead extends JSONObject implements NineStarImSerHead {
+/**
+ * 服务应答头
+ * 
+ */
+public class NineStarImMsgCliV0ReqHead extends JSONObject implements NineStarImCliHead {
 
 	private static final long serialVersionUID = 1L;
+
+	NineStarImMsgCliV0ReqHead(String uri) {
+		this.setUri(uri);
+		this.setContentType(ImContentType.TEXT);
+		this.setCharsetName("UTF-8");
+		this.setState(0);
+	}
 
 	public JSONObject getHeadData() {
 		return this;
@@ -22,11 +33,7 @@ public class NineStarImMsgSerV0ReqHead extends JSONObject implements NineStarImS
 	}
 
 	public String getContentType() {
-		String contentType = this.getString("contentType");
-		if (contentType == null) {
-			contentType = ImContentType.TEXT;
-		}
-		return contentType;
+		return this.getString("contentType");
 	}
 
 	public String getCharsetName() {
@@ -41,7 +48,7 @@ public class NineStarImMsgSerV0ReqHead extends JSONObject implements NineStarImS
 		return this.getString("source");
 	}
 
-	public void setUri(String uri) {
+	void setUri(String uri) {
 		this.put("uri", uri);
 	}
 
@@ -55,6 +62,14 @@ public class NineStarImMsgSerV0ReqHead extends JSONObject implements NineStarImS
 
 	public void setContentType(String contentType) {
 		this.put("uri", contentType);
+	}
+
+	public void setState(int state) {
+		this.put("state", state);
+	}
+
+	public void setMsg(String msg) {
+		this.put("msg", msg);
 	}
 
 }

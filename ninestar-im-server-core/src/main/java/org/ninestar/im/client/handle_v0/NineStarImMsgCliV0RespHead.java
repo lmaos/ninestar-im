@@ -1,11 +1,11 @@
-package org.ninestar.im.server.handler_v0;
+package org.ninestar.im.client.handle_v0;
 
+import org.ninestar.im.client.NineStarImCliHead;
 import org.ninestar.im.msgcoder.ImContentType;
-import org.ninestar.im.server.NineStarImSerHead;
 
 import com.alibaba.fastjson.JSONObject;
 
-public class NineStarImMsgSerV0ReqHead extends JSONObject implements NineStarImSerHead {
+public class NineStarImMsgCliV0RespHead extends JSONObject implements NineStarImCliHead {
 
 	private static final long serialVersionUID = 1L;
 
