@@ -55,8 +55,8 @@ public class NineStarImMsgSerV0RespHead extends JSONObject implements NineStarIm
 		this.put("source", source);
 	}
 
-	public void setCharsetName(String CharsetName) {
-		this.put("CharsetName", CharsetName);
+	public void setCharsetName(String charsetName) {
+		this.put("CharsetName", charsetName);
 	}
 
 	public void setContentType(String contentType) {

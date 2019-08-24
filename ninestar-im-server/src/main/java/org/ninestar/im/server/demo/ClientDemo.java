@@ -28,11 +28,12 @@ public class ClientDemo {
 							.println(String.format("异步的消息 state:%d,  uri:%s", response.getState(), response.getUri()));
 				}
 			});
-			
+
 			// 发送一个同步消息
 			NineStarImMsgCliV0Response response = output.sendSync(request);
 			// 得到结果
-			System.out.println(String.format("同步的消息 state:%d,  uri:%s", response.getState(), response.getUri()));
+			System.out.println(String.format("同步的消息 state:%d,  uri:%s, body:%s", response.getState(), response.getUri(),
+					response.bodyToString()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

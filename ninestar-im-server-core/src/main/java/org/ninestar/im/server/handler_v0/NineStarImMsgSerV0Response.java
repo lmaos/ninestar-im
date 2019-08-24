@@ -40,6 +40,15 @@ public class NineStarImMsgSerV0Response implements NineStarImSerResponse {
 			e.printStackTrace();
 		}
 	}
+	
+	public void setBody(String text, String charsetName) {
+		this.setBody(text.getBytes(Charset.forName(charsetName)));
+		this.head.setCharsetName(charsetName);
+	}
+	
+	public void setBody(String text) {
+		setBody(text, "UTF-8");
+	}
 
 	public long getMsgPackId() {
 		return msgPackId;
