@@ -90,7 +90,7 @@ public class NineStarImClient extends ChannelInitializer<SocketChannel> {
 		return channel.writeAndFlush(msg);
 	}
 
-	public NineStarImOutput getNineStarImV0Output() {
+	public NineStarImV0Output getNineStarImV0Output() {
 		return new NineStarImV0Output(this, 10000);
 	}
 

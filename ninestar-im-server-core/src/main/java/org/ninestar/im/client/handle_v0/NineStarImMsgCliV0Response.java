@@ -66,4 +66,11 @@ public class NineStarImMsgCliV0Response implements NineStarImCliResponse {
 		in.markSupported();
 	}
 
+	public int getState() {
+		return head.getState();
+	}
+
+	public String getMsg() {
+		return head.getMsg();
+	}
 }

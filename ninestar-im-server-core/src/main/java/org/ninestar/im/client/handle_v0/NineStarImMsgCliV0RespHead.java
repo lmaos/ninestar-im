@@ -41,20 +41,28 @@ public class NineStarImMsgCliV0RespHead extends JSONObject implements NineStarIm
 		return this.getString("source");
 	}
 
-	public void setUri(String uri) {
-		this.put("uri", uri);
+	public int getState() {
+		return this.getIntValue("state");
 	}
 
-	public void setSource(String source) {
-		this.put("source", source);
+	public String getMsg() {
+		return this.getString("msg");
 	}
 
-	public void setCharsetName(String CharsetName) {
-		this.put("CharsetName", CharsetName);
-	}
-
-	public void setContentType(String contentType) {
-		this.put("uri", contentType);
-	}
+	// public void setUri(String uri) {
+	// this.put("uri", uri);
+	// }
+	//
+	// public void setSource(String source) {
+	// this.put("source", source);
+	// }
+	//
+	// public void setCharsetName(String CharsetName) {
+	// this.put("CharsetName", CharsetName);
+	// }
+	//
+	// public void setContentType(String contentType) {
+	// this.put("uri", contentType);
+	// }
 
 }

@@ -19,7 +19,7 @@ public class NineStarImMsgCliV0Request implements NineStarImCliRequest{
 	private MsgPackage msgPackage;
 	private ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-	NineStarImMsgCliV0Request(String uri) {
+	public NineStarImMsgCliV0Request(String uri) {
 		this.head = new NineStarImMsgCliV0ReqHead(uri);
 		
 	}

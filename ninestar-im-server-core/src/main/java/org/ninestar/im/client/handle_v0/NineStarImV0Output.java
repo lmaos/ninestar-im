@@ -99,7 +99,7 @@ public class NineStarImV0Output implements NineStarImOutput {
 		}
 	}
 
-	void setNineStarImCliResponse(NineStarImCliResponse response) {
+	void setNineStarImCliResponse(NineStarImMsgCliV0Response response) {
 		long msgPackId = response.getMsgPackId();
 		SyncResult syncResult = result.remove(msgPackId);
 		if (syncResult != null) {
