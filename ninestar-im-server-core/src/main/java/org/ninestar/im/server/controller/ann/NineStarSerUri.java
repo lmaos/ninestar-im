@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import org.springframework.core.annotation.AliasFor;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 public @interface NineStarSerUri {
 	@AliasFor("uri")
 	public String value() default "";
