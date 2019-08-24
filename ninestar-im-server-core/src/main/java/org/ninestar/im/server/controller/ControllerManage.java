@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.ninestar.im.server.controller.ann.NineStarSerController;
 import org.ninestar.im.server.controller.ann.NineStarSerUri;
 import org.ninestar.im.server.controller.dynparams.DynMethodParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.ApplicationArguments;
@@ -22,6 +24,8 @@ public class ControllerManage implements ApplicationContextAware, InitializingBe
 
 	private Map<String, ControllerMethod> methods = new ConcurrentHashMap<String, ControllerMethod>();
 	private ApplicationContext applicationContext;
+	
+	private static final Logger log = LoggerFactory.getLogger(ControllerManage.class);
 
 	public ControllerManage() {
 
@@ -43,12 +47,14 @@ public class ControllerManage implements ApplicationContextAware, InitializingBe
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		log.info("controller 初始化 [启动]");
 		Map<String, Object> beans = applicationContext.getBeansWithAnnotation(NineStarSerController.class);
 		for (Entry<String, Object> entry : beans.entrySet()) {
 			String beanName = entry.getKey();
 			Object bean = entry.getValue();
 			handlerBean(beanName, bean);
 		}
+		log.info("controller 初始化 [完成]");
 	}
 
 	private void handlerBean(String beanName, Object bean) {
@@ -68,6 +74,7 @@ public class ControllerManage implements ApplicationContextAware, InitializingBe
 				m.setAccessible(true);
 				ControllerMethod method = new ControllerMethod(uri, contentType, m, bean, beanName);
 				this.methods.put(uri, method);
+				log.info("初始化uri:" + uri);
 			}
 		}
 	}

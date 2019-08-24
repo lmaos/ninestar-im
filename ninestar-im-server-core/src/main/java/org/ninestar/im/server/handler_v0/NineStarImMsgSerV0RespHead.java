@@ -60,7 +60,7 @@ public class NineStarImMsgSerV0RespHead extends JSONObject implements NineStarIm
 	}
 
 	public void setContentType(String contentType) {
-		this.put("uri", contentType);
+		this.put("contentType", contentType);
 	}
 
 	public void setState(int state) {

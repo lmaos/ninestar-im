@@ -8,12 +8,11 @@ import java.nio.charset.Charset;
 import org.ninestar.im.client.ConstMPID;
 import org.ninestar.im.client.NineStarImCliRequest;
 import org.ninestar.im.msgcoder.MsgPackage;
-import org.ninestar.im.server.NineStarImSerResponse;
 
 import com.alibaba.fastjson.JSON;
 
 public class NineStarImMsgCliV0Request implements NineStarImCliRequest{
-	private long msgPackId = ConstMPID.nextId();
+//	private long msgPackId = ConstMPID.nextId();
 	private NineStarImMsgCliV0ReqHead head;
 	private byte[] body;
 	private MsgPackage msgPackage;
@@ -43,10 +42,6 @@ public class NineStarImMsgCliV0Request implements NineStarImCliRequest{
 		}
 	}
 
-	public long getMsgPackId() {
-		return msgPackId;
-	}
-
 	public MsgPackage getMsgPackage() {
 		return msgPackage;
 	}
@@ -68,7 +63,7 @@ public class NineStarImMsgCliV0Request implements NineStarImCliRequest{
 		String headJson = JSON.toJSONString(head);
 		byte[] headBytes = headJson.getBytes(Charset.forName("UTF-8"));
 		byte[] bodyBytes = out.toByteArray();
-		
+		long msgPackId = ConstMPID.nextId();
 		return MsgPackage.createMsgReqPack((short) 0, msgPackId, headBytes, bodyBytes);
 	}
 

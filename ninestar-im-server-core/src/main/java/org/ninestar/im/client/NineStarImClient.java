@@ -80,10 +80,12 @@ public class NineStarImClient extends ChannelInitializer<SocketChannel> {
 		ChannelPipeline p = ch.pipeline();
 		p.addLast(new ImMsgEncode());
 		p.addLast(new ImMsgDecode());
+		p.addLast(new NineStarImHandler(this));
 	}
 
 	public void close() {
 		channel.close();
+		//group.shutdownGracefully();
 	}
 
 	public ChannelFuture writeAndFlush(MsgPackage msg) {

@@ -29,8 +29,8 @@ public class NineStarImV0Output implements NineStarImOutput {
 	private static Map<Long, CallbackCacheData> callbacks = new ConcurrentHashMap<Long, CallbackCacheData>();
 	private static LinkedTransferQueue<AsyncResult> responseQueue = new LinkedTransferQueue<>();
 	private static ExecutorService exec = Executors.newFixedThreadPool(10);
-	private static Thread readTr = new Thread(NineStarImV0Output::runAsync, "");
-	private static Thread timeoutTr = new Thread(NineStarImV0Output::runTimeout, "");
+	private static Thread readTr = new Thread(NineStarImV0Output::runAsync, "READ-TR");
+	private static Thread timeoutTr = new Thread(NineStarImV0Output::runTimeout, "TIMEOUT-TR");
 
 	static {
 		readTr.setDaemon(true);
@@ -38,6 +38,15 @@ public class NineStarImV0Output implements NineStarImOutput {
 		timeoutTr.setDaemon(true);
 		timeoutTr.start();
 	}
+	/**
+	 * 停止所有的异步处理的线程 因为是静态线程，需要手动停止一些
+	 */
+	public static void closeThread() {
+		exec.shutdown();
+		readTr.stop();
+		timeoutTr.stop();
+	}
+	
 	private NineStarImClient client;
 	private long readTimeout = 10000;
 
@@ -78,7 +87,9 @@ public class NineStarImV0Output implements NineStarImOutput {
 					}
 				}
 			} else {
-				Sleep.sleep(1000);
+				if (!Sleep.sleep(1000)) {
+					break;
+				}
 			}
 
 		}
@@ -142,7 +153,9 @@ public class NineStarImV0Output implements NineStarImOutput {
 		SyncResult syncResult = new SyncResult();
 		result.put(msgPackId, syncResult);
 		client.writeAndFlush(msg);
-		return (T) syncResult.getResponse(awaitTime);
+		T r = (T) syncResult.getResponse(awaitTime);
+		result.remove(msgPackId);
+		return r;
 	}
 
 	public <T extends NineStarImCliResponse> T sendSync(NineStarImCliRequest request)

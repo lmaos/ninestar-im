@@ -9,7 +9,7 @@ import org.ninestar.im.client.error.NineStarCliRequestTimeoutException;
 
 public class SyncResult {
 
-	private NineStarImCliResponse response;
+	private volatile NineStarImCliResponse response;
 	private ReentrantLock lock = new ReentrantLock();
 	private Condition condition = null;
 
@@ -28,7 +28,10 @@ public class SyncResult {
 		try {
 			if (response == null) {
 				condition = lock.newCondition();
-				condition.await(awaitTime, TimeUnit.MICROSECONDS);
+				if (!condition.await(awaitTime, TimeUnit.MILLISECONDS)) {
+					throw new NineStarCliRequestTimeoutException();
+				}
+//				condition.await();
 			}
 		} catch (InterruptedException e) {
 			throw new NineStarCliRequestTimeoutException();
@@ -38,4 +41,15 @@ public class SyncResult {
 
 		return response;
 	}
+//	public static void main(String[] args)  {
+//		SyncResult r = new SyncResult();
+//		
+//		try {
+//			r.getResponse(1000);
+//			System.out.println("dsd");
+//		} catch (NineStarCliRequestTimeoutException e) {
+//			e.printStackTrace();
+//			System.out.println("dsd");
+//		}
+//	}
 }

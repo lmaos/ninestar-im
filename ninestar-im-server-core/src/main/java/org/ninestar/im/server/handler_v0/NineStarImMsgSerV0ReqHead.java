@@ -54,7 +54,7 @@ public class NineStarImMsgSerV0ReqHead extends JSONObject implements NineStarImS
 	}
 
 	public void setContentType(String contentType) {
-		this.put("uri", contentType);
+		this.put("contentType", contentType);
 	}
 
 }
