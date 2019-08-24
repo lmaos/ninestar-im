@@ -14,5 +14,5 @@ import org.springframework.stereotype.Component;
 public @interface NineStarSerController {
 
 	@AliasFor(attribute = "value", annotation = Component.class)
-	public String value();
+	public String value() default "";
 }
