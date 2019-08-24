@@ -41,7 +41,5 @@ public class ClientDemo {
 			client.close();
 		}
 
-		// 结束此功能
-		NineStarImV0Output.closeThread();
 	}
 }

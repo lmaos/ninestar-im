@@ -5,6 +5,8 @@ import org.ninestar.im.monitor.ServerMonitorBox;
 import org.ninestar.im.monitor.ServerMonitorHandler;
 import org.ninestar.im.msgcoder.MsgPackage;
 import org.ninestar.im.server.handler_v0.NineStarImSerV0Handler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -19,6 +21,9 @@ public class NineStarImSerHandler extends SimpleChannelInboundHandler<MsgPackage
 	private NineStarImServer nineStarImServer;
 	private ServerMonitorBox<NineStarImSerHandler> box = null;
 	private ChannelHandlerContext channelHandlerContext;
+	
+	private static final Logger log = LoggerFactory.getLogger(NineStarImSerHandler.class);
+
 	@Autowired
 	private NineStarImSerV0Handler handlerV0;
 	private static ServerMonitor<NineStarImSerHandler> monitor = new ServerMonitor<NineStarImSerHandler>()
@@ -27,6 +32,7 @@ public class NineStarImSerHandler extends SimpleChannelInboundHandler<MsgPackage
 				@Override
 				public void timeout(ServerMonitorBox<NineStarImSerHandler> monitorBox) {
 					monitorBox.getValue().close();
+					log.info("客户端连接心跳超时");
 				}
 			});
 
@@ -45,6 +51,7 @@ public class NineStarImSerHandler extends SimpleChannelInboundHandler<MsgPackage
 			@Override
 			public void operationComplete(Future<? super Void> future) throws Exception {
 				monitor.remove(box);
+				log.info("客户端连接已经断开");
 			}
 		});
 	}

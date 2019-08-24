@@ -17,6 +17,7 @@ import org.ninestar.im.client.NineStarImClient;
 import org.ninestar.im.client.NineStarImOutput;
 import org.ninestar.im.client.error.NineStarCliRequestTimeoutException;
 import org.ninestar.im.msgcoder.MsgPackage;
+import org.ninestar.im.utils.Named;
 import org.ninestar.im.utils.Sleep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public class NineStarImV0Output implements NineStarImOutput {
 	private static Map<Long, SyncResult> result = new ConcurrentHashMap<Long, SyncResult>();
 	private static Map<Long, CallbackCacheData> callbacks = new ConcurrentHashMap<Long, CallbackCacheData>();
 	private static LinkedTransferQueue<AsyncResult> responseQueue = new LinkedTransferQueue<>();
-	private static ExecutorService exec = Executors.newFixedThreadPool(10);
+	private static ExecutorService exec = Executors.newFixedThreadPool(10,Named.newThreadFactory("readAsync"));
 	private static Thread readTr = new Thread(NineStarImV0Output::runAsync, "READ-TR");
 	private static Thread timeoutTr = new Thread(NineStarImV0Output::runTimeout, "TIMEOUT-TR");
 
@@ -37,14 +38,6 @@ public class NineStarImV0Output implements NineStarImOutput {
 		readTr.start();
 		timeoutTr.setDaemon(true);
 		timeoutTr.start();
-	}
-	/**
-	 * 停止所有的异步处理的线程 因为是静态线程，需要手动停止一些
-	 */
-	public static void closeThread() {
-		exec.shutdown();
-		readTr.stop();
-		timeoutTr.stop();
 	}
 	
 	private NineStarImClient client;
@@ -91,7 +84,6 @@ public class NineStarImV0Output implements NineStarImOutput {
 					break;
 				}
 			}
-
 		}
 	}
 
@@ -105,7 +97,7 @@ public class NineStarImV0Output implements NineStarImOutput {
 					});
 				}
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				break;
 			}
 		}
 	}
