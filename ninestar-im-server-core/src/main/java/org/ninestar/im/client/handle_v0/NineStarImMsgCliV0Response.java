@@ -73,4 +73,8 @@ public class NineStarImMsgCliV0Response implements NineStarImCliResponse {
 	public String getMsg() {
 		return head.getMsg();
 	}
+
+	public String getUri() {
+		return head.getUri();
+	}
 }

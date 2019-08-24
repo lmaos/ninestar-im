@@ -14,22 +14,25 @@ import org.ninestar.im.utils.Sleep;
 public class ClientDemo {
 	public static void main(String[] args) {
 		NineStarImClient client = new NineStarImClient("localhost", 7788);
-		// 获得 V0版本输出对象
-		NineStarImV0Output output = client.getNineStarImV0Output();
-		NineStarImMsgCliV0Request request = new NineStarImMsgCliV0Request("/test/hello");
-
-		output.send(request, new NineStarImCliRespCallback<NineStarImMsgCliV0Response>() {
-
-			@Override
-			public void onMessage(NineStarImMsgCliV0Response response) {
-				System.out.println("state:" + response.getState());
-			}
-		});
-
 		try {
+			// 获得 V0版本输出对象
+			NineStarImV0Output output = client.getNineStarImV0Output();
+			NineStarImMsgCliV0Request request = new NineStarImMsgCliV0Request("/test/hello");
+			// 发送消息 异步回调处理
+			output.send(request, new NineStarImCliRespCallback<NineStarImMsgCliV0Response>() {
+
+				@Override
+				public void onMessage(NineStarImMsgCliV0Response response) {
+					// 异步的消息
+					System.out
+							.println(String.format("异步的消息 state:%d,  uri:%s", response.getState(), response.getUri()));
+				}
+			});
+			
+			// 发送一个同步消息
 			NineStarImMsgCliV0Response response = output.sendSync(request);
-			System.out.println(response);
-			System.out.println(response.getState());
+			// 得到结果
+			System.out.println(String.format("同步的消息 state:%d,  uri:%s", response.getState(), response.getUri()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
