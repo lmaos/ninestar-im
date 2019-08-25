@@ -77,4 +77,17 @@ public class NineStarImMsgCliV0Response implements NineStarImCliResponse {
 	public String getUri() {
 		return head.getUri();
 	}
+
+	@Override
+	public String toString() {
+		String bodyval = "";
+		if (head.getContentType().startsWith("TEXT")) {
+			bodyval = bodyToString();
+		} else {
+			bodyval = "##{byte[]},len=" + body.length;
+		}
+
+		String value = String.format("head:%s, body:%s", head.toJSONString(), bodyval);
+		return value;
+	}
 }

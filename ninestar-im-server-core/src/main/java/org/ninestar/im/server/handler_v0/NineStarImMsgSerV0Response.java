@@ -40,12 +40,12 @@ public class NineStarImMsgSerV0Response implements NineStarImSerResponse {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void setBody(String text, String charsetName) {
 		this.setBody(text.getBytes(Charset.forName(charsetName)));
 		this.head.setCharsetName(charsetName);
 	}
-	
+
 	public void setBody(String text) {
 		setBody(text, "UTF-8");
 	}
@@ -75,8 +75,15 @@ public class NineStarImMsgSerV0Response implements NineStarImSerResponse {
 		String headJson = JSON.toJSONString(head);
 		byte[] headBytes = headJson.getBytes(Charset.forName("UTF-8"));
 		byte[] bodyBytes = out.toByteArray();
-		
+
 		return MsgPackage.createMsgReqPack((short) 0, msgPackId, headBytes, bodyBytes);
 	}
 
+	public void setState(int state) {
+		this.head.setState(state);
+	}
+
+	public void setMsg(String msg) {
+		this.head.setMsg(msg);
+	}
 }

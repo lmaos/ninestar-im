@@ -154,5 +154,13 @@ public class NineStarImV0Output implements NineStarImOutput {
 			throws NineStarCliRequestTimeoutException {
 		return sendSync(request, readTimeout);
 	}
+	public <T extends NineStarImCliResponse> T sendSyncNoThrows(NineStarImCliRequest request)  {
+		try {
+			return sendSync(request, readTimeout);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }

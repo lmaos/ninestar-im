@@ -22,6 +22,11 @@ public class NineStarImMsgCliV0Request implements NineStarImCliRequest{
 		this.head = new NineStarImMsgCliV0ReqHead(uri);
 		
 	}
+	
+	public NineStarImMsgCliV0Request setHeaderValue(String key, String value) {
+		this.head.put(key, value);
+		return this;
+	}
 
 	public byte[] getBodyBytes() {
 		return body;

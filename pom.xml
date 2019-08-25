@@ -17,6 +17,7 @@
 		<module>ninestar-im-server-core</module>
 		<module>ninestar-im-server</module>
 		<module>ninestar-im-server-route</module>
+		<module>ninestar-im-server-example</module>
 	</modules>
 	<properties>
 		<java.version>1.8</java.version>

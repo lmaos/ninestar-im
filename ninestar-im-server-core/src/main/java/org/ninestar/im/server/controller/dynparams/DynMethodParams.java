@@ -86,7 +86,7 @@ public class DynMethodParams {
 			Annotation[] paramTypeArr = paramsAnns[i];
 			Map<Class<? extends Annotation>, Annotation> paramAnnMap = new HashMap<>();
 			for (int j = 0; j < paramTypeArr.length; j++) {
-				Annotation paramAnn = methodAnns[i];
+				Annotation paramAnn = paramTypeArr[j];
 				paramAnnMap.put(paramAnn.annotationType(), paramAnn);
 			}
 			DynMethodParam dynMethodParam = new DynMethodParam(methodAnnMap, paramAnnMap, i, paramType, method);
