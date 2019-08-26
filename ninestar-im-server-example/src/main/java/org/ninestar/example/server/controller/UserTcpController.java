@@ -35,7 +35,7 @@ public class UserTcpController {
 	@NineStarSerUri("/signup")
 	public void signup(@RequestParam("username") String username, @RequestParam("password") String password,
 			NineStarImMsgSerV0Response response) {
-		String key = username + "-" + password;
+		String key = username;
 		if (signupMap.containsKey(key)) {
 			response.setState(10);
 			response.setMsg("已经存在用户名");
