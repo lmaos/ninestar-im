@@ -11,6 +11,7 @@ public class MsgPackage {
 	private short version; // 2 消息版本，也是起始位置分割线
 	private byte signs; // 1 标记消息取值 0 心跳 ,255 心跳应答。 byte占 8位，将此byte 分割成 高低位，高位 0000 低位0000.
 						// 高位保存头长字段占位，低位保存体长字段占位。
+	private byte type; // 0 普通， 1 push 2 push 成功应答
 	private long msgId; // 8 由客户端请求过来的消息包ID，必须穿，应答时原样返回
 	private long timestamp; // 8 此参数只有当 signs == 0xFF （255）时有效
 	private int headLength;// (signs >> 4) & 0xFF
@@ -61,6 +62,15 @@ public class MsgPackage {
 	public static MsgPackage createMsgReqPack(short version, long msgId, byte[] headBytes, byte[] bodyBytes) {
 		return new MsgPackage(version, msgId, headBytes, bodyBytes);
 	}
+	
+	/**
+	 * 创建一个指定类型的消息包
+	 * 
+	 * @param version
+	 */
+	public static MsgPackage createMsgReqPack(short version, byte type, long msgId, byte[] headBytes, byte[] bodyBytes) {
+		return new MsgPackage(version, type, msgId, headBytes, bodyBytes);
+	}
 
 	private MsgPackage(short version) {
 		this.version = version;
@@ -75,15 +85,28 @@ public class MsgPackage {
 	 * @param bodyBytes
 	 */
 	private MsgPackage(short version, long msgId, byte[] headBytes, byte[] bodyBytes) {
+		this(version, (byte) 0, msgId, headBytes, bodyBytes);
+	}
+	
+	/**
+	 * 创建一个基础数据包
+	 * 
+	 * @param version
+	 * @param msgId
+	 * @param headBytes
+	 * @param bodyBytes
+	 */
+	private MsgPackage(short version, byte type, long msgId, byte[] headBytes, byte[] bodyBytes) {
 		this.version = version;
 		this.msgId = msgId;
 		this.headBytes = headBytes == null ? ZERO_BYTES : headBytes;
 		this.bodyBytes = bodyBytes == null ? ZERO_BYTES : bodyBytes;
-		this.headLength = headBytes.length;
-		this.bodyLength = bodyBytes.length;
+		this.headLength = this.headBytes.length;
+		this.bodyLength = this.bodyBytes.length;
 		byte b1 = lenToSign(headLength);
 		byte b2 = lenToSign(bodyLength);
-		signs = (byte) ((b1 << 4) | b2);
+		this.signs = (byte) ((b1 << 4) | b2);
+		this.type = type;
 	}
 
 	/**
@@ -103,11 +126,12 @@ public class MsgPackage {
 		int b2 = lenToSign(bodyLength);
 
 		int hbsize = b1 + b2;
-		int totalsize = 1 + 2 + 8 + hbsize;
+		int totalsize = 2 + 1 + 1 + 8 + hbsize;
 		ByteBuffer buf = ByteBuffer.allocate(totalsize);
-		buf.putShort(version);
-		buf.put(signs);
-		buf.putLong(msgId);
+		buf.putShort(version); // 2
+		buf.put(signs);  // 1
+		buf.put(type);  // 1
+		buf.putLong(msgId); // 8
 		putByteBuffer(b1, headLength, buf);
 		putByteBuffer(b2, bodyLength, buf);
 		return buf.array();
@@ -190,6 +214,10 @@ public class MsgPackage {
 		return signs;
 	}
 
+	public byte getType() {
+		return type;
+	}
+	
 	public long getMsgId() {
 		return msgId;
 	}
