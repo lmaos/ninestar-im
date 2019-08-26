@@ -67,7 +67,7 @@ public interface BodyOutput {
 
 	default void putBoolean(boolean v) {
 		try {
-			out().write(v ? 1 : 0);
+			out().write(ByteBuffer.allocate(1).putDouble(v ? 1 : 0).array());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
