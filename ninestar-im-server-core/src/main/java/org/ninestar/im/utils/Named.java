@@ -11,6 +11,7 @@ public class Named implements ThreadFactory {
 	private static AtomicLong tid = new AtomicLong();
 
 	public Named(String name, boolean daemon) {
+		this.name = name;
 		this.tg = new ThreadGroup(name + "-g-" + gid.incrementAndGet());
 		this.daemon = daemon;
 	}
