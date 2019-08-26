@@ -3,6 +3,7 @@ package org.ninestar.im.server.handler_v0;
 import java.util.Date;
 
 import org.ninestar.im.server.NineStarImSerRequest;
+import org.ninestar.im.server.controller.ann.RequestHeader;
 import org.ninestar.im.server.controller.dynparams.DynMethodParam;
 import org.ninestar.im.server.controller.dynparams.DynMethodParamInjector;
 import org.ninestar.im.server.controller.dynparams.DynMethodParams;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
 
 import com.alibaba.fastjson.JSON;
+
 @Component
 public class NineStarImMethodParamInjector implements DynMethodParamInjector {
 
@@ -22,21 +24,36 @@ public class NineStarImMethodParamInjector implements DynMethodParamInjector {
 		if (requestParam != null) {
 			return getValueByRequestParam(requestParam, param, methodParams);
 		}
+		RequestHeader requestHeader = param.getMethodAnn(RequestHeader.class);
+		if (requestHeader != null) {
+			return getValueByRequestHeader(requestHeader, param, methodParams);
+		}
 		return null;
 	}
 
 	private Object getValueByRequestParam(RequestParam requestParam, DynMethodParam param, DynMethodParams methodParams)
 			throws RequestParamNotExistException {
-		NineStarImMsgSerV0Request request = (NineStarImMsgSerV0Request) methodParams.get(NineStarImSerRequest.class);
 		String paramName = requestParam.value().trim();
 		boolean required = requestParam.required();
 		String defaultValue = requestParam.defaultValue();
+		return getValueByRequest(paramName, required, defaultValue, param, methodParams);
+	}
 
+	private Object getValueByRequestHeader(RequestHeader requestHeader, DynMethodParam param,
+			DynMethodParams methodParams) throws RequestParamNotExistException {
+		String paramName = requestHeader.value().trim();
+		boolean required = requestHeader.required();
+		String defaultValue = requestHeader.defaultValue();
+		return getValueByRequest(paramName, required, defaultValue, param, methodParams);
+	}
+
+	private Object getValueByRequest(String paramName, boolean required, String defaultValue, DynMethodParam param,
+			DynMethodParams methodParams) throws RequestParamNotExistException {
 		if (paramName.isEmpty()) {
 			return null;
 		}
+		NineStarImMsgSerV0Request request = (NineStarImMsgSerV0Request) methodParams.get(NineStarImSerRequest.class);
 		Class<?> paramType = param.getParamType();
-
 		NineStarImMsgSerV0ReqHead head = request.getHead();
 		boolean existValue = head.containsKey(paramName);
 		if (!existValue) {
