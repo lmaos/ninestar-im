@@ -79,8 +79,8 @@ public class MsgPackage {
 		this.msgId = msgId;
 		this.headBytes = headBytes == null ? ZERO_BYTES : headBytes;
 		this.bodyBytes = bodyBytes == null ? ZERO_BYTES : bodyBytes;
-		this.headLength = headBytes.length;
-		this.bodyLength = bodyBytes.length;
+		this.headLength = this.headBytes.length;
+		this.bodyLength = this.bodyBytes.length;
 		byte b1 = lenToSign(headLength);
 		byte b2 = lenToSign(bodyLength);
 		signs = (byte) ((b1 << 4) | b2);
