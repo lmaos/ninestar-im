@@ -55,13 +55,17 @@ public class MsgUtils {
 			long timestamp = byteBuf.readLong();
 			return MsgPackage.createHeartbeatRespPack(version, timestamp);
 		}
+		
+		
 		byte b1 = (byte) ((signs >> 4) & 0xF);
 		byte b2 = (byte) (signs & 0xF);
-		int lenReadSize = b1 + b2 + 8;
+		int lenReadSize = 1 + b1 + b2 + 8;
 		if (byteBuf.readableBytes() < lenReadSize) {
 			byteBuf.resetReaderIndex();
 			return null;
 		}
+		byte type = byteBuf.readByte();
+		
 		long msgId = byteBuf.readLong(); // 消息ID
 		int headLength = readLength(byteBuf, b1); // 头长度
 		int bodyLength = readLength(byteBuf, b1); // 体长度
@@ -78,7 +82,7 @@ public class MsgUtils {
 			byteBuf.readBytes(bodyBytes); // 读取体数据
 		}
 		// 创建消息包对象
-		return MsgPackage.createMsgReqPack(version, msgId, headBytes, bodyBytes);
+		return MsgPackage.createMsgReqPack(version, type, msgId, headBytes, bodyBytes);
 	}
 
 	private static int readLength(ByteBuf byteBuf, byte bm) {
