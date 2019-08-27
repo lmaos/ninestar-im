@@ -24,7 +24,7 @@ public class NineStarImMethodParamInjector implements DynMethodParamInjector {
 		if (requestParam != null) {
 			return getValueByRequestParam(requestParam, param, methodParams);
 		}
-		RequestHeader requestHeader = param.getMethodAnn(RequestHeader.class);
+		RequestHeader requestHeader = param.getParamAnn(RequestHeader.class);
 		if (requestHeader != null) {
 			return getValueByRequestHeader(requestHeader, param, methodParams);
 		}
