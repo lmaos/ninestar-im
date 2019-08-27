@@ -1,4 +1,4 @@
-package org.ninestar.example.server.controller;
+package org.ninestar.example.simple.server.controller;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

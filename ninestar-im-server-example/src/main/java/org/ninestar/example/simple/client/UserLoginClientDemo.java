@@ -1,4 +1,4 @@
-package org.ninestar.example.client;
+package org.ninestar.example.simple.client;
 
 import org.ninestar.im.client.NineStarImClient;
 import org.ninestar.im.client.error.NineStarCliRequestTimeoutException;

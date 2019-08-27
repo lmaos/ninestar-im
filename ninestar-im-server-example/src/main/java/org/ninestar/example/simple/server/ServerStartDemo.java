@@ -1,4 +1,4 @@
-package org.ninestar.example.server;
+package org.ninestar.example.simple.server;
 
 import org.ninestar.im.server.config.EnableNineStarImServer;
 import org.springframework.boot.SpringApplication;
