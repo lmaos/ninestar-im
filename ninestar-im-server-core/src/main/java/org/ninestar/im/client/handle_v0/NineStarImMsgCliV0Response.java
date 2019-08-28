@@ -13,7 +13,7 @@ public class NineStarImMsgCliV0Response implements NineStarImCliResponse {
 	private MsgPackage msgPackage;
 	private ByteArrayInputStream in;
 
-	NineStarImMsgCliV0Response(long msgPackId, NineStarImMsgCliV0RespHead head, byte[] body, MsgPackage msgPackage) {
+	protected NineStarImMsgCliV0Response(long msgPackId, NineStarImMsgCliV0RespHead head, byte[] body, MsgPackage msgPackage) {
 		this.msgPackId = msgPackId;
 		this.head = head;
 		this.body = body;

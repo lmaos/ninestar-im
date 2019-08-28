@@ -2,10 +2,7 @@ package org.ninestar.im.server.controller.dynparams;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,6 +17,14 @@ public class DynMethodParams {
 	private final static Object[] OBJECT_ZERO = {};
 
 	private Map<Class<?>, Object> typeParams = new HashMap<>();
+
+	public DynMethodParams(DynMethodParams dynMethodParams) {
+		typeParams.putAll(dynMethodParams.typeParams);
+	}
+
+	public DynMethodParams() {
+
+	}
 
 	public DynMethodParams setDynMethodParamInjector(DynMethodParamInjector dynMethodParamInjector) {
 		this.dynMethodParamInjector = dynMethodParamInjector;

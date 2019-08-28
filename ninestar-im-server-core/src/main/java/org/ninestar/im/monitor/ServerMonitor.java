@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -28,7 +27,13 @@ public class ServerMonitor<T> {
 	public ServerMonitorBox<T> createBoxAndPutMonitor(T value, long timeout) {
 		return createBoxAndPutMonitor(null, value, timeout);
 	}
-
+	/**
+	 * 创建一个监控BOX
+	 * @param boxId  如果值为 null 则随机生成一个 ID
+	 * @param value
+	 * @param timeout
+	 * @return
+	 */
 	public ServerMonitorBox<T> createBoxAndPutMonitor(String boxId, T value, long timeout) {
 		if (close) {
 			throw new RuntimeException("监控器已经关闭，无法创建新的监控盒子");
@@ -127,21 +132,25 @@ public class ServerMonitor<T> {
 		this.boxs.remove(box.getBoxId());
 	} 
 	
-	public static void main(String[] args) throws InterruptedException {
-		ServerMonitor x = new ServerMonitor<>(1000);
-		x.createBoxAndPutMonitor(100, 1000);
-		x.createBoxAndPutMonitor(101, 1000);
-		x.createBoxAndPutMonitor(103, 1000);
-		x.createBoxAndPutMonitor(104, 1100);
-		x.addMonitorHandler(new ServerMonitorHandler() {
-
-			@Override
-			public void timeout(ServerMonitorBox monitorBox) {
-				System.out.println("box-val:" + monitorBox.getValue());
-			}
-		});
-		Thread.sleep(4000);
-		x.close();
-		Thread.sleep(100);
+	public ServerMonitorBox<T> getBox(String boxId) {
+		return this.boxs.get(boxId);
 	}
+	
+//	public static void main(String[] args) throws InterruptedException {
+//		ServerMonitor x = new ServerMonitor<>(1000);
+//		x.createBoxAndPutMonitor(100, 1000);
+//		x.createBoxAndPutMonitor(101, 1000);
+//		x.createBoxAndPutMonitor(103, 1000);
+//		x.createBoxAndPutMonitor(104, 1100);
+//		x.addMonitorHandler(new ServerMonitorHandler() {
+//
+//			@Override
+//			public void timeout(ServerMonitorBox monitorBox) {
+//				System.out.println("box-val:" + monitorBox.getValue());
+//			}
+//		});
+//		Thread.sleep(4000);
+//		x.close();
+//		Thread.sleep(100);
+//	}
 }

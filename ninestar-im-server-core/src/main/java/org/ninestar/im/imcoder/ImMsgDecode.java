@@ -28,7 +28,7 @@ public class ImMsgDecode extends ByteToMessageDecoder {
 			if (version == null) {
 				return;
 			}
-			if (version == 0) { // 支持 0
+			if (version == 0 || version == 1) { // 支持 0 , 1
 				MsgPackage msg = MsgUtils.readMsgPackage(version, in);
 				if (msg != null) {
 					out.add(msg);
