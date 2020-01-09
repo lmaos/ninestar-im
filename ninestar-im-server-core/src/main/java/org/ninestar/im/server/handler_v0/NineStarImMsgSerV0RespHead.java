@@ -8,9 +8,8 @@ import com.alibaba.fastjson.JSONObject;
  * 服务应答头
  * 
  */
-public class NineStarImMsgSerV0RespHead extends JSONObject implements NineStarImSerHead {
-
-	private static final long serialVersionUID = 1L;
+public class NineStarImMsgSerV0RespHead implements NineStarImSerHead {
+	//private static final long serialVersionUID = 1L;
 
 	NineStarImMsgSerV0RespHead(NineStarImSerHead head) {
 		this.setUri(head.getUri());
@@ -19,56 +18,78 @@ public class NineStarImMsgSerV0RespHead extends JSONObject implements NineStarIm
 		this.setState(0);
 	}
 
+	private int state;
+	private String uri;
+	private String msg;
+	private String contentType = "TEXT";
+	private String charsetName = "UTF-8";
+	private String boxId;
+	private JSONObject headData = new JSONObject();
+	
 	public JSONObject getHeadData() {
-		return this;
+		return headData;
 	}
 
 	public <T> T getJavaBean(Class<T> type) {
-		return this.toJavaObject(type);
+		return headData.toJavaObject(type);
 	}
 
 	public String getUri() {
-		return this.getString("uri");
+		return this.uri;
 	}
 
 	public String getContentType() {
-		return this.getString("contentType");
+		return this.contentType;
 	}
 
 	public String getCharsetName() {
-		String charsetName = this.getString("charsetName");
-		if (charsetName == null) {
-			charsetName = "UTF-8";
-		}
 		return charsetName;
 	}
 
-	public String getSource() {
-		return this.getString("source");
-	}
-
 	void setUri(String uri) {
-		this.put("uri", uri);
-	}
-
-	public void setSource(String source) {
-		this.put("source", source);
+		this.uri = uri;
 	}
 
 	public void setCharsetName(String charsetName) {
-		this.put("CharsetName", charsetName);
+		this.charsetName = charsetName;
 	}
 
 	public void setContentType(String contentType) {
-		this.put("contentType", contentType);
+		this.contentType = contentType;
 	}
-
+	
 	public void setState(int state) {
-		this.put("state", state);
+		this.state = state;
 	}
 
 	public void setMsg(String msg) {
-		this.put("msg", msg);
+		this.msg = msg;
+	}
+	
+	public int getState() {
+		return state;
+	}
+	
+	public String getMsg() {
+		return msg;
 	}
 
+	@Override
+	public Object get(Object key) {
+		return headData.get(key);
+	}
+
+	@Override
+	public Object put(String key, Object value) {
+		return headData.put(key, value);
+	}
+	
+	void setBoxId(String boxId) {
+		this.boxId = boxId;
+	}
+	
+	public String getBoxId() {
+		return boxId;
+	}
+	
 }

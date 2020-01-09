@@ -1,68 +1,82 @@
 package org.ninestar.im.client.handle_v0;
 
 import org.ninestar.im.client.NineStarImCliHead;
-import org.ninestar.im.msgcoder.ImContentType;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
-public class NineStarImMsgCliV0RespHead extends JSONObject implements NineStarImCliHead {
+public class NineStarImMsgCliV0RespHead implements NineStarImCliHead {
 
-	private static final long serialVersionUID = 1L;
-
+	private int state;
+	private String uri;
+	private String msg;
+	private String contentType = "TEXT";
+	private String charsetName = "UTF-8";
+	private JSONObject headData = new JSONObject();
+	
 	public JSONObject getHeadData() {
-		return this;
+		return headData;
 	}
 
 	public <T> T getJavaBean(Class<T> type) {
-		return this.toJavaObject(type);
+		return headData.toJavaObject(type);
 	}
 
 	public String getUri() {
-		return this.getString("uri");
+		return this.uri;
 	}
 
 	public String getContentType() {
-		String contentType = this.getString("contentType");
-		if (contentType == null) {
-			contentType = ImContentType.TEXT;
-		}
-		return contentType;
+		return this.contentType;
 	}
 
 	public String getCharsetName() {
-		String charsetName = this.getString("charsetName");
-		if (charsetName == null) {
-			charsetName = "UTF-8";
-		}
-		return charsetName;
-	}
-
-	public String getSource() {
-		return this.getString("source");
+		return this.charsetName;
 	}
 
 	public int getState() {
-		return this.getIntValue("state");
+		return this.state;
 	}
 
 	public String getMsg() {
-		return this.getString("msg");
+		return this.msg;
 	}
 
-	// public void setUri(String uri) {
-	// this.put("uri", uri);
-	// }
-	//
-	// public void setSource(String source) {
-	// this.put("source", source);
-	// }
-	//
-	// public void setCharsetName(String CharsetName) {
-	// this.put("CharsetName", CharsetName);
-	// }
-	//
-	// public void setContentType(String contentType) {
-	// this.put("uri", contentType);
-	// }
+	void setState(int state) {
+		this.state = state;
+	}
 
+	void setUri(String uri) {
+		this.uri = uri;
+	}
+
+	void setMsg(String msg) {
+		this.msg = msg;
+	}
+
+	void setContentType(String contentType) {
+		this.contentType = contentType;
+	}
+
+	void setCharsetName(String charsetName) {
+		this.charsetName = charsetName;
+	}
+
+	void setHeadData(JSONObject headData) {
+		this.headData = headData;
+	}
+
+	@Override
+	public Object get(Object key) {
+		return headData.get(key);
+	}
+
+	@Override
+	public Object put(String key, Object value) {
+		return headData.put(key, value);
+	}
+	
+	public String toString() {
+		return JSON.toJSONString(this);
+	}
 }

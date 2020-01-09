@@ -7,6 +7,7 @@ import org.ninestar.im.client.NineStarImHandler;
 import org.ninestar.im.msgcoder.MsgPackage;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.parser.Feature;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -34,7 +35,7 @@ public class NineStarImCliV0Handler {
 		byte[] bodyBytes = msg.getBodyBytes();
 		
 		String headJson = new String(headBytes, Charset.forName("UTF-8"));
-		NineStarImMsgCliV0RespHead respHead = JSON.parseObject(headJson, NineStarImMsgCliV0RespHead.class);
+		NineStarImMsgCliV0RespHead respHead = JSON.parseObject(headJson, NineStarImMsgCliV0RespHead.class, Feature.SupportNonPublicField);
 		NineStarImMsgCliV0Response response = new NineStarImMsgCliV0Response(msgPackId, respHead, bodyBytes, msg);
 		output.setNineStarImCliResponse(response);
 	};

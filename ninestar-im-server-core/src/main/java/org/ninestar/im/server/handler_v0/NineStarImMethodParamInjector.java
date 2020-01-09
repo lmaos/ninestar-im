@@ -2,8 +2,11 @@ package org.ninestar.im.server.handler_v0;
 
 import java.util.Date;
 
+import org.ninestar.im.server.NineStarImSerHandler;
 import org.ninestar.im.server.NineStarImSerRequest;
+import org.ninestar.im.server.controller.ann.ClientId;
 import org.ninestar.im.server.controller.ann.RequestHeader;
+import org.ninestar.im.server.controller.ann.ServerId;
 import org.ninestar.im.server.controller.dynparams.DynMethodParam;
 import org.ninestar.im.server.controller.dynparams.DynMethodParamInjector;
 import org.ninestar.im.server.controller.dynparams.DynMethodParams;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 @Component
 public class NineStarImMethodParamInjector implements DynMethodParamInjector {
@@ -27,6 +31,32 @@ public class NineStarImMethodParamInjector implements DynMethodParamInjector {
 		RequestHeader requestHeader = param.getParamAnn(RequestHeader.class);
 		if (requestHeader != null) {
 			return getValueByRequestHeader(requestHeader, param, methodParams);
+		}
+		// 获得客户端 ID
+		ClientId clientId = param.getParamAnn(ClientId.class);
+		if (clientId != null) {
+			return getValueByClientId(clientId, param, methodParams);
+		}
+		// 获得服务器 ID
+		ServerId serverId = param.getParamAnn(ServerId.class);
+		if (serverId != null) {
+			return getValueByServerId(serverId, param, methodParams);
+		}
+		return null;
+	}
+	
+	private Object getValueByClientId(ClientId clientId, DynMethodParam param, DynMethodParams methodParams) {
+		NineStarImSerHandler handler = (NineStarImSerHandler) methodParams.get(NineStarImSerHandler.class);
+		if (handler != null) {
+			return handler.getBox().getBoxId();
+		}
+		return null;
+	}
+	
+	private Object getValueByServerId(ServerId serverId, DynMethodParam param, DynMethodParams methodParams) {
+		NineStarImSerHandler handler = (NineStarImSerHandler) methodParams.get(NineStarImSerHandler.class);
+		if (handler != null) {
+			return handler.getNineStarImServer().getServerId();
 		}
 		return null;
 	}
@@ -54,7 +84,7 @@ public class NineStarImMethodParamInjector implements DynMethodParamInjector {
 		}
 		NineStarImMsgSerV0Request request = (NineStarImMsgSerV0Request) methodParams.get(NineStarImSerRequest.class);
 		Class<?> paramType = param.getParamType();
-		NineStarImMsgSerV0ReqHead head = request.getHead();
+		JSONObject head = request.getHead().getHeadData();
 		boolean existValue = head.containsKey(paramName);
 		if (!existValue) {
 			boolean defaultValueIsEmp = defaultValue.equals(ValueConstants.DEFAULT_NONE);

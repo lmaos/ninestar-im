@@ -10,12 +10,14 @@ import org.ninestar.im.server.controller.ControllerManage;
 import org.ninestar.im.server.controller.ControllerResult;
 import org.ninestar.im.server.controller.ControllerResult.ControllerResultState;
 import org.ninestar.im.server.controller.dynparams.DynMethodParams;
+import org.ninestar.im.utils.BoxIdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.parser.Feature;
 
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -37,7 +39,7 @@ public class NineStarImSerV0Handler {
 
 		String headJson = new String(headBytes, Charset.forName("UTF-8"));
 		// 请求头
-		NineStarImMsgSerV0ReqHead reqHead = JSON.parseObject(headJson, NineStarImMsgSerV0ReqHead.class);
+		NineStarImMsgSerV0ReqHead reqHead = JSON.parseObject(headJson, NineStarImMsgSerV0ReqHead.class, Feature.SupportNonPublicField);
 		String uri = reqHead.getUri();
 		String contentType = reqHead.getContentType();
 		// 封装来自客户端的请求
@@ -45,11 +47,13 @@ public class NineStarImSerV0Handler {
 
 		// 应答头
 		NineStarImMsgSerV0RespHead respHead = new NineStarImMsgSerV0RespHead(reqHead);
+		respHead.setBoxId(BoxIdUtils.encodeBoxId(nsih.getBox().getBoxId()));
 		// 服务器封装应答
 		NineStarImMsgSerV0Response response = new NineStarImMsgSerV0Response(msgPackId, respHead);
 		// ApplicationContext ac = nsih.getApplicationContext();
 		DynMethodParams dynParams = new DynMethodParams();
 		dynParams.setDynMethodParamInjector(nineStarImMethodParamInjector);
+		dynParams.put(new Class<?>[] { NineStarImSerHandler.class}, nsih);
 		dynParams.put(new Class<?>[] { NineStarImMsgSerV0Request.class, NineStarImSerRequest.class }, request);
 		dynParams.put(new Class<?>[] { NineStarImMsgSerV0Response.class, NineStarImSerResponse.class }, response);
 

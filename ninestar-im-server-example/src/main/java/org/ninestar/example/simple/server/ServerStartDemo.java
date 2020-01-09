@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  */
 @SpringBootApplication
-@EnableNineStarImServer(port=12345)
+@EnableNineStarImServer(port=12345, host="172.22.89.2")
 public class ServerStartDemo {
 	public static void main(String[] args) {
 		SpringApplication.run(ServerStartDemo.class, args);

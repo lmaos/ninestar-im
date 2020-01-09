@@ -1,10 +1,12 @@
 package org.ninestar.im.server;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.ninestar.im.monitor.ServerMonitor;
 import org.ninestar.im.monitor.ServerMonitorBox;
-import org.ninestar.im.monitor.ServerMonitorHandler;
 import org.ninestar.im.msgcoder.MsgPackage;
 import org.ninestar.im.server.handler_v0.NineStarImSerV0Handler;
+import org.ninestar.im.utils.BoxIdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,31 +23,27 @@ public class NineStarImSerHandler extends SimpleChannelInboundHandler<MsgPackage
 	private NineStarImServer nineStarImServer;
 	private ServerMonitorBox<NineStarImSerHandler> box = null;
 	private ChannelHandlerContext channelHandlerContext;
-	
-	private static final Logger log = LoggerFactory.getLogger(NineStarImSerHandler.class);
 
+	private static final Logger log = LoggerFactory.getLogger(NineStarImSerHandler.class);
+	private static final AtomicLong clientIds = new AtomicLong();
 	@Autowired
 	private NineStarImSerV0Handler handlerV0;
-	private static ServerMonitor<NineStarImSerHandler> monitor = new ServerMonitor<NineStarImSerHandler>()
-			.addMonitorHandler(new ServerMonitorHandler<NineStarImSerHandler>() {
-
-				@Override
-				public void timeout(ServerMonitorBox<NineStarImSerHandler> monitorBox) {
-					monitorBox.getValue().close();
-					log.info("客户端连接心跳超时");
-				}
-			});
+	private ServerMonitor<NineStarImSerHandler> monitor;
 
 	public NineStarImSerHandler(ApplicationContext applicationContext, NineStarImServer nineStarImServer) {
 
 		this.applicationContext = applicationContext;
 		this.nineStarImServer = nineStarImServer;
+		this.monitor = nineStarImServer.getMonitor();
 	}
 
 	@Override
 	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+		String serverId = this.getNineStarImServer().getServerId();
+		long clientId = clientIds.incrementAndGet();
+		String boxId = BoxIdUtils.getBoxId(serverId, clientId);
 		this.channelHandlerContext = ctx;
-		this.box = monitor.createBoxAndPutMonitor(this, 120000);
+		this.box = monitor.createBoxAndPutMonitor(boxId, this, 120000);
 		ctx.channel().closeFuture().addListener(new GenericFutureListener<Future<? super Void>>() {
 
 			@Override
@@ -66,7 +64,7 @@ public class NineStarImSerHandler extends SimpleChannelInboundHandler<MsgPackage
 			ctx.writeAndFlush(respMsg);
 			return;
 		}
-		
+
 		// 如果是心跳应答 （服务器也可以向客户端发送心跳主动验证存活）
 		if (msg.isHeartbeatRespPack()) {
 			this.box.updateTime();
@@ -112,5 +110,9 @@ public class NineStarImSerHandler extends SimpleChannelInboundHandler<MsgPackage
 			return channelHandlerContext.writeAndFlush(msgPackage);
 		}
 		return null;
+	}
+	
+	public ServerMonitorBox<NineStarImSerHandler> getBox() {
+		return box;
 	}
 }

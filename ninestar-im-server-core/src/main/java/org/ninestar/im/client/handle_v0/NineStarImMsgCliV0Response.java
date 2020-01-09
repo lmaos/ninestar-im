@@ -87,7 +87,7 @@ public class NineStarImMsgCliV0Response implements NineStarImCliResponse {
 			bodyval = "##{byte[]},len=" + body.length;
 		}
 
-		String value = String.format("head:%s, body:%s", head.toJSONString(), bodyval);
+		String value = String.format("head:%s, body:%s", head.toString(), bodyval);
 		return value;
 	}
 }

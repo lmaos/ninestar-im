@@ -21,4 +21,9 @@ public @interface EnableNineStarImServer {
 	 * @return
 	 */
 	int port() default 7788;
+	
+	String host() default "localhost";
+
+	String serverId() default "";
+	
 }
