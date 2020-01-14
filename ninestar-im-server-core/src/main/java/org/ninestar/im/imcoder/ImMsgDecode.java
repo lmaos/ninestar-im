@@ -34,7 +34,7 @@ public class ImMsgDecode extends ByteToMessageDecoder {
 					out.add(msg);
 				}
 			} else {
-				log.error("解析的版本号错误");
+				log.error("解析的版本号错误:" + version);
 				ctx.close();
 			}
 		} catch (Exception e) {

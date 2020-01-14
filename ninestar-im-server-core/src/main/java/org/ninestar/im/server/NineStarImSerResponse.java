@@ -11,4 +11,14 @@ public interface NineStarImSerResponse extends BodyOutput {
 
 	MsgPackage toMsgPackage();
 
+	/**
+	 * 设置应答状态
+	 */
+	void setState(int state);
+
+	/**
+	 * 设置应答提示内容
+	 */
+	void setMsg(String msg);
+
 }

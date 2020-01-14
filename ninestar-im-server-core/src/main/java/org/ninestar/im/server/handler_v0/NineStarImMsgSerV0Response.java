@@ -17,9 +17,13 @@ public class NineStarImMsgSerV0Response implements NineStarImSerResponse {
 	private MsgPackage msgPackage;
 	private ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-	NineStarImMsgSerV0Response(long msgPackId, NineStarImMsgSerV0RespHead head) {
+	protected NineStarImMsgSerV0Response(long msgPackId, NineStarImMsgSerV0RespHead head) {
 		this.msgPackId = msgPackId;
 		this.head = head;
+	}
+	protected NineStarImMsgSerV0Response(long msgPackId) {
+		this.msgPackId = msgPackId;
+		this.head = new NineStarImMsgSerV0RespHead();
 	}
 
 	public byte[] getBodyBytes() {

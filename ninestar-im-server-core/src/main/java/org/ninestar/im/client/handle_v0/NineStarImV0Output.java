@@ -60,6 +60,10 @@ public class NineStarImV0Output implements NineStarImOutput {
 	public void setReadTimeout(long readTimeout) {
 		this.readTimeout = readTimeout;
 	}
+	
+	public long getReadTimeout() {
+		return readTimeout;
+	}
 
 	private static void runTimeout() {
 		while (true) {
@@ -129,6 +133,13 @@ public class NineStarImV0Output implements NineStarImOutput {
 		MsgPackage msg = request.toMsgPackage();
 		long msgPackId = msg.getMsgId(); // 获得消息ID
 		String url = request.getHead().getUri(); // 获得URI
+		client.writeAndFlush(msg); // 输出
+		callbacks.put(msgPackId, new CallbackCacheData(callback, readTimeout, url)); // 设置回掉
+	}
+	public void send(MsgPackage msg,
+			NineStarImCliRespCallback<? extends NineStarImCliResponse> callback) {
+		long msgPackId = msg.getMsgId(); // 获得消息ID
+		String url = ""; // 获得URI
 		client.writeAndFlush(msg); // 输出
 		callbacks.put(msgPackId, new CallbackCacheData(callback, readTimeout, url)); // 设置回掉
 	}

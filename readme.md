@@ -8,7 +8,13 @@ version:1.0
 
     服务器基础功能已经开发完毕
     客户端基础功能已经开发完毕
-
+2020-01-14
+    
+    增加 Server 集群功能。
+    集群使用 @EnableNineStarZkRegister 启用
+    增加host绑定，serverID，clientId。
+    增加消息转发，分发。
+    
 目前进度: 持续研发中
 
 
@@ -56,6 +62,33 @@ version:1.0
 		// 注册
 		NineStarImMsgCliV0Response signupResp = out.sendSync(signupReq);
 		
+
+服务器启动2 （集群）
+
+	@SpringBootApplication
+	@EnableNineStarImServer(port=12345, host="localhost")
+	@EnableNineStarZkRegister(registerConnecton="127.0.0.1:2181")
+	public class ServerStartDemo {
+		public static void main(String[] args) {
+			SpringApplication.run(ServerStartDemo.class, args);
+		}
+	}
+	
+服务器内获取其他服务器连接客户实例
+
+	@Autowired
+	NineStarNameser nameser; // 在服务器内使用
+	
+	{
+		// 获取访问serverId的服务器连接客户端
+		NineStarImClient client = nameser.getNineStarImClient(serverId); 
+		
+		// 调用 nameser.send方法 将会自动识别targerIds所在服务端，进行转发。
+		nameser.send(sourceId, targerIds[], response);// 转发分发，targerIds 是客户端连接服务器的唯一标识，response 发送给这些客户终端的内容
+		
+	}
+	
+
 		
 		
 		

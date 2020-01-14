@@ -120,7 +120,7 @@ public class MsgPackage {
 		}
 		if (signs == HEARTBEAT_RESP_PACK) {
 			long time = timestamp;
-			return ByteBuffer.allocate(19).putShort(version).put(signs).putLong(time).array();
+			return ByteBuffer.allocate(11).putShort(version).put(signs).putLong(time).array();
 		}
 		int b1 = lenToSign(headLength);
 		int b2 = lenToSign(bodyLength);

@@ -2,10 +2,13 @@ package org.ninestar.im.server;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.annotation.Resource;
+
 import org.ninestar.im.monitor.ServerMonitor;
 import org.ninestar.im.monitor.ServerMonitorBox;
 import org.ninestar.im.msgcoder.MsgPackage;
 import org.ninestar.im.server.handler_v0.NineStarImSerV0Handler;
+import org.ninestar.im.server.handler_v1.NineStarImSerV1Handler;
 import org.ninestar.im.utils.BoxIdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,8 +29,11 @@ public class NineStarImSerHandler extends SimpleChannelInboundHandler<MsgPackage
 
 	private static final Logger log = LoggerFactory.getLogger(NineStarImSerHandler.class);
 	private static final AtomicLong clientIds = new AtomicLong();
-	@Autowired
+	@Resource(name="handlerV0")
 	private NineStarImSerV0Handler handlerV0;
+	@Resource(name="handlerV1")
+	private NineStarImSerV1Handler handlerV1;
+	
 	private ServerMonitor<NineStarImSerHandler> monitor;
 
 	public NineStarImSerHandler(ApplicationContext applicationContext, NineStarImServer nineStarImServer) {
@@ -74,6 +80,9 @@ public class NineStarImSerHandler extends SimpleChannelInboundHandler<MsgPackage
 		// 协议版本解析
 		if (version == 0) {
 			handlerV0.handler(msg, ctx, this);
+		}
+		if (version == 1) {
+			handlerV1.handler(msg, ctx, this);
 		}
 
 	}

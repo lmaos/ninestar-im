@@ -2,12 +2,13 @@ package org.ninestar.example.simple.client;
 
 import org.ninestar.im.client.NineStarImClient;
 import org.ninestar.im.client.error.NineStarCliRequestTimeoutException;
+import org.ninestar.im.client.error.NineStarClientConnectionException;
 import org.ninestar.im.client.handle_v0.NineStarImMsgCliV0Request;
 import org.ninestar.im.client.handle_v0.NineStarImMsgCliV0Response;
 import org.ninestar.im.client.handle_v0.NineStarImV0Output;
 
 public class UserLoginClientDemo {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws NineStarClientConnectionException {
 		NineStarImClient c = new NineStarImClient("172.22.89.2", 12345);
 		NineStarImV0Output out = c.getNineStarImV0Output();
 

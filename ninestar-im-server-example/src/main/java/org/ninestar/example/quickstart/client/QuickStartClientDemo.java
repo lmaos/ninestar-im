@@ -2,6 +2,7 @@ package org.ninestar.example.quickstart.client;
 
 import org.ninestar.im.client.NineStarImClient;
 import org.ninestar.im.client.error.NineStarCliRequestTimeoutException;
+import org.ninestar.im.client.error.NineStarClientConnectionException;
 import org.ninestar.im.client.handle_v0.NineStarImMsgCliV0Request;
 import org.ninestar.im.client.handle_v0.NineStarImMsgCliV0Response;
 import org.ninestar.im.client.handle_v0.NineStarImV0Output;
@@ -11,7 +12,7 @@ public class QuickStartClientDemo {
     private static final int PORT = 8888;
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NineStarClientConnectionException {
         // 初始化客户端
         NineStarImClient client = new NineStarImClient(HOST, PORT);
         NineStarImV0Output output = client.getNineStarImV0Output();

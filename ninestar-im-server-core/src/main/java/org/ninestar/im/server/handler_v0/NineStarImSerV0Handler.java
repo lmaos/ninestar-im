@@ -6,11 +6,11 @@ import org.ninestar.im.msgcoder.MsgPackage;
 import org.ninestar.im.server.NineStarImSerHandler;
 import org.ninestar.im.server.NineStarImSerRequest;
 import org.ninestar.im.server.NineStarImSerResponse;
+import org.ninestar.im.server.NineStarImSerVxHandler;
 import org.ninestar.im.server.controller.ControllerManage;
 import org.ninestar.im.server.controller.ControllerResult;
 import org.ninestar.im.server.controller.ControllerResult.ControllerResultState;
 import org.ninestar.im.server.controller.dynparams.DynMethodParams;
-import org.ninestar.im.utils.BoxIdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 
 @Component("handlerV0")
-public class NineStarImSerV0Handler {
+public class NineStarImSerV0Handler implements NineStarImSerVxHandler{
 
 	@Autowired
 	private ControllerManage controllerManage;
@@ -47,7 +47,7 @@ public class NineStarImSerV0Handler {
 
 		// 应答头
 		NineStarImMsgSerV0RespHead respHead = new NineStarImMsgSerV0RespHead(reqHead);
-		respHead.setBoxId(BoxIdUtils.encodeBoxId(nsih.getBox().getBoxId()));
+		respHead.setBoxId(nsih.getBox().getBoxId());
 		// 服务器封装应答
 		NineStarImMsgSerV0Response response = new NineStarImMsgSerV0Response(msgPackId, respHead);
 		// ApplicationContext ac = nsih.getApplicationContext();

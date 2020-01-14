@@ -17,6 +17,10 @@ public class NineStarImMsgSerV0RespHead implements NineStarImSerHead {
 		this.setCharsetName(head.getCharsetName());
 		this.setState(0);
 	}
+	NineStarImMsgSerV0RespHead() {
+		this.setUri("");
+		this.setState(0);
+	}
 
 	private int state;
 	private String uri;

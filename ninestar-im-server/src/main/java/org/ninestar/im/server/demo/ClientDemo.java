@@ -2,6 +2,7 @@ package org.ninestar.im.server.demo;
 
 import org.ninestar.im.client.NineStarImCliRespCallback;
 import org.ninestar.im.client.NineStarImClient;
+import org.ninestar.im.client.error.NineStarClientConnectionException;
 import org.ninestar.im.client.handle_v0.NineStarImMsgCliV0Request;
 import org.ninestar.im.client.handle_v0.NineStarImMsgCliV0Response;
 import org.ninestar.im.client.handle_v0.NineStarImV0Output;
@@ -12,7 +13,7 @@ import org.ninestar.im.utils.Sleep;
  *
  */
 public class ClientDemo {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws NineStarClientConnectionException {
 		NineStarImClient client = new NineStarImClient("localhost", 7788);
 		try {
 			// 获得 V0版本输出对象

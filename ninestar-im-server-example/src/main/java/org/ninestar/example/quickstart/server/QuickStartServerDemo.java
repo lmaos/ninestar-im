@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@EnableNineStarImServer(port = 8888)
+@EnableNineStarImServer(port = 7788)
 public class QuickStartServerDemo {
     public static void main(String[] args) {
         SpringApplication.run(QuickStartServerDemo.class, args);

@@ -1,7 +1,6 @@
 package org.ninestar.im.client;
 
-import java.util.concurrent.CountDownLatch;
-
+import org.ninestar.im.client.error.NineStarClientConnectionException;
 import org.ninestar.im.client.handle_v0.NineStarImV0Output;
 import org.ninestar.im.imcoder.ImMsgDecode;
 import org.ninestar.im.imcoder.ImMsgEncode;
@@ -24,24 +23,32 @@ public class NineStarImClient extends ChannelInitializer<SocketChannel> {
 	private Bootstrap b = null;
 	private NioEventLoopGroup group;
 	private Channel channel;
+	private boolean start;
 
 	private static final Logger log = LoggerFactory.getLogger(NineStarImClient.class);
 
-	public NineStarImClient(String host, int port) {
+	public NineStarImClient(String host, int port) throws NineStarClientConnectionException {
 		connect(host, port);
 	}
 
-	private void connect(String host, int port) {
+	private void connect(String host, int port) throws NineStarClientConnectionException {
 		group = new NioEventLoopGroup(1);
 		b = new Bootstrap();
 		b.group(group).channel(NioSocketChannel.class).handler(this);
 		ChannelFuture channelFuture = b.connect(host, port);
-		CountDownLatch aws = new CountDownLatch(1);
+		channelFuture.awaitUninterruptibly();
+		if (!channelFuture.isSuccess()) {
+			log.error("连接失败：" + host + ":" + port);
+			group.shutdownGracefully();
+			
+			throw new NineStarClientConnectionException(host, port);
+		}
+		
 		channelFuture.addListener(new GenericFutureListener<Future<? super Void>>() {
 			@Override
 			public void operationComplete(Future<? super Void> future) throws Exception {
-				aws.countDown();
-				log.info("=客户端启动=");
+				log.info("=客户端启动=" + future.isSuccess());
+				start = true;
 			}
 		});
 		channel = channelFuture.channel();
@@ -50,15 +57,10 @@ public class NineStarImClient extends ChannelInitializer<SocketChannel> {
 
 			@Override
 			public void operationComplete(Future<? super Void> future) throws Exception {
-				aws.countDown();
 				log.info("=客户端关闭=");
+				start = false;
 			}
 		});
-		try {
-			aws.await();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 
 		Thread run = new Thread(new Runnable() {
 			@Override
@@ -84,7 +86,9 @@ public class NineStarImClient extends ChannelInitializer<SocketChannel> {
 	}
 
 	public void close() {
-		channel.close();
+		if (channel != null) {
+			channel.close();
+		}
 		//group.shutdownGracefully();
 	}
 
@@ -96,9 +100,12 @@ public class NineStarImClient extends ChannelInitializer<SocketChannel> {
 		return new NineStarImV0Output(this, 10000);
 	}
 
-	public static void main(String[] args) {
-		NineStarImClient client = new NineStarImClient("localhost", 7788);
+	public boolean isStart() {
+		return start;
+	}
+	public static void main(String[] args) throws NineStarClientConnectionException {
+		NineStarImClient client = new NineStarImClient("121.201.62.151", 800);
 		System.out.println("asasdsa");
-		client.close();
+		//client.close();
 	}
 }
