@@ -151,13 +151,13 @@ public class MsgPackage {
 	}
 
 	private byte lenToSign(int len) {
-		if (headLength == 0) {
+		if (len == 0) {
 			return 0;
-		} else if (headLength <= Byte.MAX_VALUE) {
+		} else if (len <= Byte.MAX_VALUE) {
 			return 1;
-		} else if (headLength <= Short.MAX_VALUE) {
+		} else if (len <= Short.MAX_VALUE) {
 			return 2;
-		} else if (headLength <= Integer.MAX_VALUE) {
+		} else if (len <= Integer.MAX_VALUE) {
 			return 4;
 		} else {
 			throw new RuntimeException("不支持当前长度大小");
