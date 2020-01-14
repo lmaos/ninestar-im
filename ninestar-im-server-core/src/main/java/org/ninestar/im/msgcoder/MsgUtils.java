@@ -68,7 +68,7 @@ public class MsgUtils {
 		
 		long msgId = byteBuf.readLong(); // 消息ID
 		int headLength = readLength(byteBuf, b1); // 头长度
-		int bodyLength = readLength(byteBuf, b1); // 体长度
+		int bodyLength = readLength(byteBuf, b2); // 体长度
 		if (byteBuf.readableBytes() < headLength + bodyLength) {
 			byteBuf.resetReaderIndex();
 			return null;
