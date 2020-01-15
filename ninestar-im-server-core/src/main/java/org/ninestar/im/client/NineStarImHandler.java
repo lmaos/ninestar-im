@@ -17,12 +17,14 @@ import io.netty.util.concurrent.GenericFutureListener;
 public class NineStarImHandler extends SimpleChannelInboundHandler<MsgPackage> {
 	private NineStarImClient nineStarImClient;
 	private ChannelHandlerContext channelHandlerContext;
-	private NineStarImCliV0Handler cliV0Handler = new NineStarImCliV0Handler(this);
+	private NineStarImCliV0Handler cliV0Handler;
 	private ScheduledExecutorService heartbeatExec = Executors.newScheduledThreadPool(1, Named.newThreadFactory("heartbeatExec"));
 	private int errsize;
 	private long heartbeatTime = 0;
+	
 	public NineStarImHandler(NineStarImClient nineStarImClient) {
 		this.nineStarImClient = nineStarImClient;
+		this.cliV0Handler = new NineStarImCliV0Handler(this);
 	}
 
 	public NineStarImClient getNineStarImClient() {

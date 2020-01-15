@@ -16,6 +16,7 @@ public class NineStarImMsgSerV1ReqHead {
 	// 发送的目标
 	private Set<String> targeIds = new HashSet<String>();
 	private String sourceId; // 发送源
+	private boolean sendall;
 
 	public Set<String> getTargeIds() {
 		return targeIds;
@@ -37,6 +38,14 @@ public class NineStarImMsgSerV1ReqHead {
 
 	public void addTargeIdAll(Collection<String> targeIds) {
 		this.targeIds.addAll(targeIds);
+	}
+	
+	public void setSendall(boolean sendall) {
+		this.sendall = sendall;
+	}
+	
+	public boolean isSendall() {
+		return sendall;
 	}
 	
 	public byte[] toBytes() {

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
+import org.ninestar.im.client.ConstMPID;
 import org.ninestar.im.msgcoder.MsgPackage;
 import org.ninestar.im.server.NineStarImSerResponse;
 
@@ -26,6 +27,12 @@ public class NineStarImMsgSerV0Response implements NineStarImSerResponse {
 		this.head = new NineStarImMsgSerV0RespHead();
 	}
 
+	public static NineStarImMsgSerV0Response crateNineStarImMsgSerV0Response(String uri) {
+		NineStarImMsgSerV0RespHead head = new NineStarImMsgSerV0RespHead();
+		head.setUri(uri);
+		return new NineStarImMsgSerV0Response(ConstMPID.nextId(), head);
+	}
+	
 	public byte[] getBodyBytes() {
 		return body;
 	}

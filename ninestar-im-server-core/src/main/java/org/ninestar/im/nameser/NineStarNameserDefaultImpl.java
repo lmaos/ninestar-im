@@ -137,7 +137,13 @@ public class NineStarNameserDefaultImpl implements NineStarNameser {
 		retrySends.put(serverId,
 				new RetrySend(sourceId, serverId, targerIdSet, output.getReadTimeout() + 1000, response));
 		NineStarImMsgSerV1Request v1req = new NineStarImMsgSerV1Request(sourceId);
-		v1req.getHead().addTargeIdAll(targerIdSet);
+		if (targerIds == null) {
+			v1req.getHead().setSendall(true);	
+		} else {
+			v1req.getHead().addTargeIdAll(targerIdSet);
+		}
+		
+		
 		v1req.setBody(response.toMsgPackage());
 		client.getNineStarImV0Output().send(v1req.toMsgPackage(), (resp) -> {
 			String respServerId = (String) resp.getHead().get("serverId");
@@ -147,5 +153,17 @@ public class NineStarNameserDefaultImpl implements NineStarNameser {
 
 	public NineStarImServer getCurrentServer() {
 		return currentServer;
+	}
+
+	@Override
+	public void send(String sourceId, NineStarImSerResponse response) {
+		Set<String> serverIds = clients.keySet();
+		for (String serverId : serverIds) {
+			if (serverId.equals(this.currentServer.getServerId())) {
+				sendCurrentServer(sourceId, null, response);
+			} else {
+				send(sourceId, serverId, null, response);
+			}
+		}
 	}
 }

@@ -12,6 +12,8 @@ public interface NineStarImCliResponse extends BodyInput{
 
 	byte[] getBody();
 
+	int getState(); // 获得应答状态
+	
 	default String bodyToString(String charsetName) {
 		return new String(getBody(), Charset.forName(charsetName));
 	}

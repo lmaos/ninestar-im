@@ -7,6 +7,7 @@ import org.ninestar.im.server.NineStarImSerHandler;
 import org.ninestar.im.server.NineStarImSerRequest;
 import org.ninestar.im.server.NineStarImSerResponse;
 import org.ninestar.im.server.NineStarImSerVxHandler;
+import org.ninestar.im.server.ServerUser;
 import org.ninestar.im.server.controller.ControllerManage;
 import org.ninestar.im.server.controller.ControllerResult;
 import org.ninestar.im.server.controller.ControllerResult.ControllerResultState;
@@ -54,6 +55,7 @@ public class NineStarImSerV0Handler implements NineStarImSerVxHandler{
 		DynMethodParams dynParams = new DynMethodParams();
 		dynParams.setDynMethodParamInjector(nineStarImMethodParamInjector);
 		dynParams.put(new Class<?>[] { NineStarImSerHandler.class}, nsih);
+		dynParams.put(new Class<?>[] { ServerUser.class}, nsih.getServerUser());
 		dynParams.put(new Class<?>[] { NineStarImMsgSerV0Request.class, NineStarImSerRequest.class }, request);
 		dynParams.put(new Class<?>[] { NineStarImMsgSerV0Response.class, NineStarImSerResponse.class }, response);
 

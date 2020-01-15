@@ -1,6 +1,7 @@
 package org.ninestar.im.server;
 
 import java.net.InetAddress;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.ninestar.im.imcoder.ImMsgDecode;
@@ -179,5 +180,21 @@ public class NineStarImServer extends ChannelInitializer<SocketChannel>
 	@Override
 	public String toString() {
 		return "ns://" + host + ":" + port;
+	}
+	
+	public boolean send(String clientId, NineStarImSerResponse response) {
+		ServerMonitorBox<NineStarImSerHandler> box = monitor.getBox(clientId);
+		if (box == null) {
+			return false;
+		}
+		box.getValue().writeAndFlush(response.toMsgPackage());
+		return true;
+	}
+	
+	public void send(NineStarImSerResponse response) {
+		Set<String> clientIds = monitor.getBoxIdSet();
+		for (String clientId : clientIds) {
+			send(clientId, response);
+		}
 	}
 }

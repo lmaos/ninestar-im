@@ -173,5 +173,11 @@ public class NineStarImV0Output implements NineStarImOutput {
 			return null;
 		}
 	}
+	
+	@Override
+	public NineStarImCliRequest createRequest(String uri) {
+		
+		return new NineStarImMsgCliV0Request(uri);
+	}
 
 }

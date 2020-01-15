@@ -38,7 +38,11 @@ public class NineStarImSerV1Handler implements NineStarImSerVxHandler {
 
 	public static NineStarImMsgSerV1Response send(long msgPackId, MsgPackage resp, Set<String> targeIds,
 			NineStarImServer server) {
+		resp.setType((byte) 1);
 		ServerMonitor<NineStarImSerHandler> monitor = server.getMonitor();
+		if (targeIds == null) {
+			targeIds = monitor.getBoxIdSet();
+		}
 		int successSize = 0;
 		int totalSize = targeIds.size();
 		for (String targeId : targeIds) {
@@ -74,8 +78,11 @@ public class NineStarImSerV1Handler implements NineStarImSerVxHandler {
 		MsgPackage body = MsgUtils.readMsgPackage((short) 0, Unpooled.wrappedBuffer(bodyBytes));
 		String headJson = new String(headBytes, Charset.forName("UTF-8"));
 		NineStarImMsgSerV1ReqHead reqHeadv1 = JSON.parseObject(headJson, NineStarImMsgSerV1ReqHead.class);
-		Set<String> targeIds = reqHeadv1.getTargeIds();
-
+		Set<String> targeIds = null;
+		if (!reqHeadv1.isSendall()) {
+			targeIds = reqHeadv1.getTargeIds();	
+		}
+		
 		NineStarImMsgSerV1Response response = send(msgPackId, body, targeIds, nsih.getNineStarImServer());
 		mpids.put(reqKey, System.currentTimeMillis());
 		ctx.writeAndFlush(response);

@@ -2,6 +2,8 @@ package org.ninestar.im.client;
 
 import org.ninestar.im.client.error.NineStarClientConnectionException;
 import org.ninestar.im.client.handle_v0.NineStarImV0Output;
+import org.ninestar.im.client.subscribe.NineStarSubscribe;
+import org.ninestar.im.client.subscribe.SubscribeController;
 import org.ninestar.im.imcoder.ImMsgDecode;
 import org.ninestar.im.imcoder.ImMsgEncode;
 import org.ninestar.im.msgcoder.MsgPackage;
@@ -23,15 +25,18 @@ public class NineStarImClient extends ChannelInitializer<SocketChannel> {
 	private Bootstrap b = null;
 	private NioEventLoopGroup group;
 	private Channel channel;
-	private boolean start;
-
+	private volatile boolean start;
+	private SubscribeController subscribeController = new SubscribeController(); // 订阅控制
 	private static final Logger log = LoggerFactory.getLogger(NineStarImClient.class);
-
+	private String host;
+	private int port;
 	public NineStarImClient(String host, int port) throws NineStarClientConnectionException {
 		connect(host, port);
 	}
 
 	private void connect(String host, int port) throws NineStarClientConnectionException {
+		this.host = host;
+		this.port = port;
 		group = new NioEventLoopGroup(1);
 		b = new Bootstrap();
 		b.group(group).channel(NioSocketChannel.class).handler(this);
@@ -70,6 +75,7 @@ public class NineStarImClient extends ChannelInitializer<SocketChannel> {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} finally {
+					start = false;
 					group.shutdownGracefully();
 				}
 			}
@@ -85,11 +91,12 @@ public class NineStarImClient extends ChannelInitializer<SocketChannel> {
 		p.addLast(new NineStarImHandler(this));
 	}
 
-	public void close() {
+	public NineStarImClient close() {
 		if (channel != null) {
 			channel.close();
 		}
 		//group.shutdownGracefully();
+		return this;
 	}
 
 	public ChannelFuture writeAndFlush(MsgPackage msg) {
@@ -99,9 +106,24 @@ public class NineStarImClient extends ChannelInitializer<SocketChannel> {
 	public NineStarImV0Output getNineStarImV0Output() {
 		return new NineStarImV0Output(this, 10000);
 	}
+	
+	public NineStarSubscribe getNineStarSubscribe() {
+		return subscribeController;
+	}
 
 	public boolean isStart() {
 		return start;
+	}
+	/**
+	 * 如果连接被关闭，则调用这个可以重新连接
+	 * @return
+	 * @throws NineStarClientConnectionException
+	 */
+	public NineStarImClient reconnection() throws NineStarClientConnectionException {
+		if (!isStart()) {
+			connect(host, port);
+		}
+		return this;
 	}
 	public static void main(String[] args) throws NineStarClientConnectionException {
 		NineStarImClient client = new NineStarImClient("121.201.62.151", 800);

@@ -12,7 +12,6 @@ import org.ninestar.im.server.handler_v1.NineStarImSerV1Handler;
 import org.ninestar.im.utils.BoxIdUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import io.netty.channel.ChannelFuture;
@@ -29,12 +28,14 @@ public class NineStarImSerHandler extends SimpleChannelInboundHandler<MsgPackage
 
 	private static final Logger log = LoggerFactory.getLogger(NineStarImSerHandler.class);
 	private static final AtomicLong clientIds = new AtomicLong();
-	@Resource(name="handlerV0")
+	@Resource(name = "handlerV0")
 	private NineStarImSerV0Handler handlerV0;
-	@Resource(name="handlerV1")
+	@Resource(name = "handlerV1")
 	private NineStarImSerV1Handler handlerV1;
-	
+
 	private ServerMonitor<NineStarImSerHandler> monitor;
+
+	private ServerUser serverUser;
 
 	public NineStarImSerHandler(ApplicationContext applicationContext, NineStarImServer nineStarImServer) {
 
@@ -50,6 +51,7 @@ public class NineStarImSerHandler extends SimpleChannelInboundHandler<MsgPackage
 		String boxId = BoxIdUtils.getBoxId(serverId, clientId);
 		this.channelHandlerContext = ctx;
 		this.box = monitor.createBoxAndPutMonitor(boxId, this, 120000);
+		serverUser = new ServerUser(ctx, this);
 		ctx.channel().closeFuture().addListener(new GenericFutureListener<Future<? super Void>>() {
 
 			@Override
@@ -120,8 +122,12 @@ public class NineStarImSerHandler extends SimpleChannelInboundHandler<MsgPackage
 		}
 		return null;
 	}
-	
+
 	public ServerMonitorBox<NineStarImSerHandler> getBox() {
 		return box;
+	}
+
+	public ServerUser getServerUser() {
+		return serverUser;
 	}
 }

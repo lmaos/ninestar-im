@@ -12,4 +12,5 @@ public interface NineStarNameser {
 	NineStarImClient getNineStarImClient(String serverId);
 	
 	void send(String sourceId, String[] targerIds, NineStarImSerResponse response);
+	void send(String sourceId, NineStarImSerResponse response);
 }

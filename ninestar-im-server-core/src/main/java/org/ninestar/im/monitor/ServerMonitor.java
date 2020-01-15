@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -134,6 +135,10 @@ public class ServerMonitor<T> {
 	
 	public ServerMonitorBox<T> getBox(String boxId) {
 		return this.boxs.get(boxId);
+	}
+	
+	public Set<String> getBoxIdSet() {
+		return this.boxs.keySet();
 	}
 	
 //	public static void main(String[] args) throws InterruptedException {

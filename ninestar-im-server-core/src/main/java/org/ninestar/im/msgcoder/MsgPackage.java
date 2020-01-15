@@ -11,14 +11,15 @@ public class MsgPackage {
 	private short version; // 2 消息版本，也是起始位置分割线
 	private byte signs; // 1 标记消息取值 0 心跳 ,255 心跳应答。 byte占 8位，将此byte 分割成 高低位，高位 0000 低位0000.
 						// 高位保存头长字段占位，低位保存体长字段占位。
-	private byte type; // 0 普通， 1 push 2 push 成功应答
+	private byte type; // 1【暂未确定使用】
 	private long msgId; // 8 由客户端请求过来的消息包ID，必须穿，应答时原样返回
-	private long timestamp; // 8 此参数只有当 signs == 0xFF （255）时有效
 	private int headLength;// (signs >> 4) & 0xFF
 	private int bodyLength; // signs & 0xFF
 	private byte[] headBytes = ZERO_BYTES;
 	private byte[] bodyBytes = ZERO_BYTES;
 
+	
+	private long timestamp; // 8 此参数只有当 signs == 0xFF （255）时有效
 	/**
 	 * 创建一个心跳数据包
 	 * 
@@ -234,4 +235,7 @@ public class MsgPackage {
 		return bodyLength;
 	}
 
+	public void setType(byte type) {
+		this.type = type;
+	}
 }

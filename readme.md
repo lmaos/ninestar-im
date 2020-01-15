@@ -14,6 +14,10 @@ version:1.0
     集群使用 @EnableNineStarZkRegister 启用
     增加host绑定，serverID，clientId。
     增加消息转发，分发。
+2020-01-14
+	
+	增加客户端订阅功能
+	
     
 目前进度: 持续研发中
 
@@ -89,6 +93,26 @@ version:1.0
 	}
 	
 
+
+客户端订阅的功能
+	
+	// 服务器端推送到uri = /subscribe/ok 的消息将会进入 UriSubscribe的实现进行处理
+	
+	NineStarImClient c = new NineStarImClient("localhost", 12345);
+	NineStarSubscribe nineStarSubscribe = c.getNineStarSubscribe();
+	// 设置订阅线程池【可选】
+	// nineStarSubscribe.setThreadPool(Executors.newFixedThreadPool(3, Named.newThreadFactory("nineStarSubscribe")));
 		
+	// 增加订阅服务器的推送消息
+	c.getNineStarSubscribe().addSubscribe("/subscribe/ok", new UriSubscribe() {
+			
+		@Override
+		public void onmessage(NineStarImCliResponse response) throws Exception {
+			System.out.println("订阅："+response.bodyToString()); 
+		}
+		
+	});
+		
+	//	c.close(); 不需要关闭
 		
 		
