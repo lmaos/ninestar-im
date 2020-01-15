@@ -14,7 +14,7 @@ version:1.0
     集群使用 @EnableNineStarZkRegister 启用
     增加host绑定，serverID，clientId。
     增加消息转发，分发。
-2020-01-14
+2020-01-15
 	
 	增加客户端订阅功能
 	
@@ -88,7 +88,19 @@ version:1.0
 		NineStarImClient client = nameser.getNineStarImClient(serverId); 
 		
 		// 调用 nameser.send方法 将会自动识别targerIds所在服务端，进行转发。
-		nameser.send(sourceId, targerIds[], response);// 转发分发，targerIds 是客户端连接服务器的唯一标识，response 发送给这些客户终端的内容
+		nameser.send(targerIds[], response);// 转发分发，targerIds 是客户端连接服务器的唯一标识，response 发送给这些客户终端的内容
+		
+	}
+	
+服务器推送消息
+
+	@Autowired
+	NineStarImServer server; // 在服务器内使用
+	
+	{
+		server.send(response); // 将消息推送给所有客户端
+		server.send(targerId, response); // 将消息推送给 targerId
+		server.send(targerIds[], response); // 将消息推送给 这些客户端
 		
 	}
 	
