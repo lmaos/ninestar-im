@@ -11,6 +11,6 @@ public interface NineStarNameser {
 	// 获得服务对应的客户端
 	NineStarImClient getNineStarImClient(String serverId);
 	
-	void send(String sourceId, String[] targerIds, NineStarImSerResponse response);
-	void send(String sourceId, NineStarImSerResponse response);
+	void send(String[] targerIds, NineStarImSerResponse response);
+	void send(NineStarImSerResponse response);
 }

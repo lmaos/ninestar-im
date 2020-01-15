@@ -7,8 +7,8 @@ public class NineStarImMsgSerV1Request {
 	private NineStarImMsgSerV1ReqHead head;
 	private MsgPackage body;
 
-	public NineStarImMsgSerV1Request(String sourceId) {
-		head = new NineStarImMsgSerV1ReqHead(sourceId);
+	public NineStarImMsgSerV1Request() {
+		head = new NineStarImMsgSerV1ReqHead();
 	}
 
 	public void setBody(MsgPackage body) {

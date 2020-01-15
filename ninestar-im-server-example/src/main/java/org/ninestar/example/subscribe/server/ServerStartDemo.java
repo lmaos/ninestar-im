@@ -29,7 +29,7 @@ public class ServerStartDemo {
 	@RequestMapping("/ok")
 	@ResponseBody
 	public String ok() {
-		NineStarImSerResponse response = NineStarImMsgSerV0Response.crateNineStarImMsgSerV0Response("/subscribe/ok");
+		NineStarImSerResponse response = NineStarImMsgSerV0Response.createNineStarImMsgSerV0Response("/subscribe/ok");
 		response.setBody(("time:" + System.currentTimeMillis()).getBytes());
 		nineStarImServer.send(response);
 		return "ok";

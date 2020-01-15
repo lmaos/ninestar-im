@@ -27,7 +27,7 @@ public class NineStarImMsgSerV0Response implements NineStarImSerResponse {
 		this.head = new NineStarImMsgSerV0RespHead();
 	}
 
-	public static NineStarImMsgSerV0Response crateNineStarImMsgSerV0Response(String uri) {
+	public static NineStarImMsgSerV0Response createNineStarImMsgSerV0Response(String uri) {
 		NineStarImMsgSerV0RespHead head = new NineStarImMsgSerV0RespHead();
 		head.setUri(uri);
 		return new NineStarImMsgSerV0Response(ConstMPID.nextId(), head);

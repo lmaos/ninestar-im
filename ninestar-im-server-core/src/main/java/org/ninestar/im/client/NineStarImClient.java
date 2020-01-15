@@ -30,7 +30,12 @@ public class NineStarImClient extends ChannelInitializer<SocketChannel> {
 	private static final Logger log = LoggerFactory.getLogger(NineStarImClient.class);
 	private String host;
 	private int port;
+	private String name = "";
 	public NineStarImClient(String host, int port) throws NineStarClientConnectionException {
+		connect(host, port);
+	}
+	public NineStarImClient(String host, int port, String name) throws NineStarClientConnectionException {
+		this.name = name;
 		connect(host, port);
 	}
 
@@ -52,7 +57,7 @@ public class NineStarImClient extends ChannelInitializer<SocketChannel> {
 		channelFuture.addListener(new GenericFutureListener<Future<? super Void>>() {
 			@Override
 			public void operationComplete(Future<? super Void> future) throws Exception {
-				log.info("=客户端启动=" + future.isSuccess());
+				log.info(name + "[客户端启动]" + future.isSuccess());
 				start = true;
 			}
 		});
@@ -62,7 +67,7 @@ public class NineStarImClient extends ChannelInitializer<SocketChannel> {
 
 			@Override
 			public void operationComplete(Future<? super Void> future) throws Exception {
-				log.info("=客户端关闭=");
+				log.info( name + "[客户端关闭]");
 				start = false;
 			}
 		});

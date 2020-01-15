@@ -174,7 +174,7 @@ public class ZookeeperRegister {
 	public void register(NineStarImServer server) {
 		String host = server.getHost();
 		int port = server.getPort();
-		String serverId = server.getServerId().replace("/", "_");
+		String serverId = server.getServerId();
 		List<SerAddr> serAddrs = new ArrayList<SerAddr>();
 		if (host.equals("localhost")) {
 			List<IP> ips = IPAddress.getIp4s();

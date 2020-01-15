@@ -38,7 +38,7 @@ public class NineStarImSerV1Handler implements NineStarImSerVxHandler {
 
 	public static NineStarImMsgSerV1Response send(long msgPackId, MsgPackage resp, Set<String> targeIds,
 			NineStarImServer server) {
-		resp.setType((byte) 1);
+		
 		ServerMonitor<NineStarImSerHandler> monitor = server.getMonitor();
 		if (targeIds == null) {
 			targeIds = monitor.getBoxIdSet();
@@ -85,7 +85,7 @@ public class NineStarImSerV1Handler implements NineStarImSerVxHandler {
 		
 		NineStarImMsgSerV1Response response = send(msgPackId, body, targeIds, nsih.getNineStarImServer());
 		mpids.put(reqKey, System.currentTimeMillis());
-		ctx.writeAndFlush(response);
+		ctx.writeAndFlush(response.toMsgPackage());
 
 	}
 	

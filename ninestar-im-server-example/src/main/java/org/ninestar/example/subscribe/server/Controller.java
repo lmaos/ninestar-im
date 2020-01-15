@@ -19,7 +19,7 @@ public class Controller {
 	}
 	@NineStarSerUri("/test")
 	public void test(ServerUser serverUser, NineStarImSerResponse response) {
-		NineStarImSerResponse responsex = NineStarImMsgSerV0Response.crateNineStarImMsgSerV0Response("/subscribe/ok");
+		NineStarImSerResponse responsex = NineStarImMsgSerV0Response.createNineStarImMsgSerV0Response("/subscribe/ok");
 		responsex.setBody("123456789".getBytes());
 		serverUser.send(responsex);
 	}

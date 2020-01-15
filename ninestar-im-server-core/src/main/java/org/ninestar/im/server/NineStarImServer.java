@@ -9,6 +9,7 @@ import org.ninestar.im.imcoder.ImMsgEncode;
 import org.ninestar.im.monitor.ServerMonitor;
 import org.ninestar.im.monitor.ServerMonitorBox;
 import org.ninestar.im.monitor.ServerMonitorHandler;
+import org.ninestar.im.nameser.NineStarNameser;
 import org.ninestar.im.server.error.ServerPortException;
 import org.ninestar.im.server.error.ServerStartException;
 import org.slf4j.Logger;
@@ -58,10 +59,17 @@ public class NineStarImServer extends ChannelInitializer<SocketChannel>
 	
 	private boolean start = false;
 	
+	private NineStarNameser nineStarNameser;
+	
 	public NineStarImServer(String serverId) {
-		this.serverId = serverId;
+		this.serverId = serverId.replace("/", "_");
 	}
 
+	public void register(NineStarNameser nineStarNameser) {
+		this.nineStarNameser = nineStarNameser;
+		this.nineStarNameser.register(this);
+	}
+	
 	public void setPort(int port) {
 		this.port = port;
 	}
@@ -96,9 +104,8 @@ public class NineStarImServer extends ChannelInitializer<SocketChannel>
 		if (host.isEmpty()) {
 			this.host = "localhost";
 		}
-		
-		if (serverId ==null || serverId.isEmpty()) {
-			this.serverId = "ns://" + host + ":" + port;
+		if (serverId == null || serverId.isEmpty()) {
+			this.serverId = "ns:" + host + ":" + port;
 		}
 		
 		try {
@@ -182,8 +189,13 @@ public class NineStarImServer extends ChannelInitializer<SocketChannel>
 		return "ns://" + host + ":" + port;
 	}
 	
-	public boolean send(String clientId, NineStarImSerResponse response) {
-		ServerMonitorBox<NineStarImSerHandler> box = monitor.getBox(clientId);
+	public boolean send(String targerId, NineStarImSerResponse response) {
+		if (this.nineStarNameser != null) {
+			this.nineStarNameser.send(new String[] {targerId}, response);
+			return true;
+		} 
+		
+		ServerMonitorBox<NineStarImSerHandler> box = monitor.getBox(targerId);
 		if (box == null) {
 			return false;
 		}
@@ -191,10 +203,27 @@ public class NineStarImServer extends ChannelInitializer<SocketChannel>
 		return true;
 	}
 	
+	public void send(String targerIds[], NineStarImSerResponse response) {
+		if (this.nineStarNameser != null) {
+			this.nineStarNameser.send(targerIds, response);
+			return;
+		} 
+		for (String targerId : targerIds) {
+			ServerMonitorBox<NineStarImSerHandler> box = monitor.getBox(targerId);
+			if (box != null) {
+				box.getValue().writeAndFlush(response.toMsgPackage());
+			}
+		}
+	}
+	
 	public void send(NineStarImSerResponse response) {
-		Set<String> clientIds = monitor.getBoxIdSet();
-		for (String clientId : clientIds) {
-			send(clientId, response);
+		if (this.nineStarNameser != null) {
+			this.nineStarNameser.send(response);
+			return;
+		}
+		Set<String> targerIds = monitor.getBoxIdSet();
+		for (String targerId : targerIds) {
+			send(targerId, response);
 		}
 	}
 }

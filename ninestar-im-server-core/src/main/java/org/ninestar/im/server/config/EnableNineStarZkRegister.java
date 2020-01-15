@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.ninestar.im.server.anns.NineStarServerRegister;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Import;
 @Target(ElementType.TYPE)
 @EnableNineStarImServerInit
 @Import(NineStarRegistorConfig.class)
+@NineStarServerRegister
 public @interface EnableNineStarZkRegister {
 	
 	String registerConnecton() default "127.0.0.1:2181";

@@ -15,19 +15,25 @@ import org.ninestar.im.client.ConstMPID;
 import org.ninestar.im.client.NineStarImClient;
 import org.ninestar.im.client.error.NineStarClientConnectionException;
 import org.ninestar.im.client.handle_v0.NineStarImV0Output;
+import org.ninestar.im.msgcoder.MsgPackage;
 import org.ninestar.im.server.NineStarImSerResponse;
 import org.ninestar.im.server.NineStarImServer;
 import org.ninestar.im.server.handler_v1.NineStarImMsgSerV1Request;
 import org.ninestar.im.server.handler_v1.NineStarImSerV1Handler;
 import org.ninestar.im.utils.BoxIdUtils;
 import org.ninestar.im.utils.Named;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NineStarNameserDefaultImpl implements NineStarNameser {
 	private Map<String, NineStarImClient> clients = new ConcurrentHashMap<String, NineStarImClient>();
-	private Map<String, RetrySend> retrySends = new ConcurrentHashMap<String, RetrySend>();
+	private Map<Long, RetrySend> retrySends = new ConcurrentHashMap<Long, RetrySend>();
 	private NineStarImServer currentServer;
 	private ScheduledExecutorService task = Executors.newScheduledThreadPool(2, Named.newThreadFactory("nameser"));
 	private ZookeeperRegister zookeeperRegister;
+	
+	private static final Logger log = LoggerFactory.getLogger(NineStarNameserDefaultImpl.class);
+
 	public NineStarNameserDefaultImpl(String connectString) {
 		try {
 			zookeeperRegister = new ZookeeperRegister(connectString, 20000); 
@@ -40,14 +46,23 @@ public class NineStarNameserDefaultImpl implements NineStarNameser {
 	}
 
 	void retrySendsRun() {
-		for (Entry<String, RetrySend> entry : retrySends.entrySet()) {
+		Set<Entry<Long, RetrySend>> entries = retrySends.entrySet();
+		for (Entry<Long, RetrySend> entry : entries) {
 			RetrySend retrySend = entry.getValue();
-			if (retrySend.isTimeout()) {
-				String sourceId = retrySend.getSourceId();
+			if (retrySend.getSize() >= 25) {
+				log.error("重试发送消息出现故障: serId=" + retrySend.getServerId() 
+				+ ", msgId="+retrySend.getMsgPackage().getMsgId());
+			} else if (retrySend.isTimeout()) {
 				String serverId = retrySend.getServerId();
-				Set<String> targerIds = retrySend.getTargerIds();
-				NineStarImSerResponse response = retrySend.getResponse();
-				send(sourceId, serverId, targerIds, response);
+				MsgPackage msgPackage = retrySend.getMsgPackage();
+				NineStarImClient client = getNineStarImClient(serverId);
+				if (client != null) {
+					client.getNineStarImV0Output().send(msgPackage, (resp) -> {
+						long msgId = resp.getMsgPackId();
+						NineStarNameserDefaultImpl.this.retrySends.remove(msgId);
+					});
+					retrySend.incr();	
+				}
 			}
 		}
 	}
@@ -68,7 +83,7 @@ public class NineStarNameserDefaultImpl implements NineStarNameser {
 					SerAddr addr = addrs.get(i);
 					String host = addr.getHost();
 					int port = addr.getPort();
-					client = new NineStarImClient(host, port);
+					client = new NineStarImClient(host, port, serverId);
 					clients_tmp.put(serverId, client);
 					break;
 				} catch (NineStarClientConnectionException e) {
@@ -87,8 +102,11 @@ public class NineStarNameserDefaultImpl implements NineStarNameser {
 
 	@Override
 	public void register(NineStarImServer server) {
-		this.currentServer = server;
-		zookeeperRegister.register(server);
+		if (this.currentServer == null) {
+			this.currentServer = server;
+			zookeeperRegister.register(server);
+			server.register(this);
+		}
 	}
 
 	@Override
@@ -98,7 +116,7 @@ public class NineStarNameserDefaultImpl implements NineStarNameser {
 	}
 
 	@Override
-	public void send(String sourceId, String[] targerIds, NineStarImSerResponse response) {
+	public void send(String[] targerIds, NineStarImSerResponse response) {
 		Map<String, Set<String>> targerIdsgroup = new HashMap<String, Set<String>>();
 		for (String targerId : targerIds) {
 			String serverId = BoxIdUtils.getServerId(targerId, targerId);
@@ -114,40 +132,39 @@ public class NineStarNameserDefaultImpl implements NineStarNameser {
 			Set<String> targerIdSet = entry.getValue();
 			
 			if (serverId.equals(this.currentServer.getServerId())) {
-				sendCurrentServer(sourceId, targerIdSet, response);
+				sendCurrentServer(targerIdSet, response);
 			} else {
-				send(sourceId, serverId, targerIdSet, response);
+				send(serverId, targerIdSet, response);
 			}
 		}
 	}
 	
-	private void sendCurrentServer(String sourceId, Set<String> targerIds, NineStarImSerResponse response) {
+	private void sendCurrentServer(Set<String> targerIds, NineStarImSerResponse response) {
 		long msgPackId = ConstMPID.nextId();
 		NineStarImSerV1Handler.send(msgPackId, response.toMsgPackage(), targerIds, currentServer);
 	}
 
-	private void send(String sourceId, String serverId, Set<String> targerIds, NineStarImSerResponse response) {
+	private void send(String serverId, Set<String> targerIds, NineStarImSerResponse response) {
 		NineStarImClient client = getNineStarImClient(serverId);
 		if (client == null) {
 			// 目标服务不存在
 			return;
 		}
-		NineStarImV0Output output = new NineStarImV0Output(client, 3000);
+		 NineStarImV0Output output = new NineStarImV0Output(client, 3000);
 		Set<String> targerIdSet = targerIds;
-		retrySends.put(serverId,
-				new RetrySend(sourceId, serverId, targerIdSet, output.getReadTimeout() + 1000, response));
-		NineStarImMsgSerV1Request v1req = new NineStarImMsgSerV1Request(sourceId);
+		NineStarImMsgSerV1Request v1req = new NineStarImMsgSerV1Request();
 		if (targerIds == null) {
 			v1req.getHead().setSendall(true);	
 		} else {
 			v1req.getHead().addTargeIdAll(targerIdSet);
 		}
-		
-		
 		v1req.setBody(response.toMsgPackage());
-		client.getNineStarImV0Output().send(v1req.toMsgPackage(), (resp) -> {
-			String respServerId = (String) resp.getHead().get("serverId");
-			NineStarNameserDefaultImpl.this.retrySends.remove(respServerId);
+		
+		MsgPackage msgPackage = v1req.toMsgPackage();
+//		retrySends.put(serverId, new RetrySend(sourceId, serverId, targerIdSet, output.getReadTimeout() + 1000, response));
+		output.send(msgPackage, (resp) -> {
+			long msgId = resp.getMsgPackId();
+			NineStarNameserDefaultImpl.this.retrySends.remove(msgId);
 		});
 	}
 
@@ -156,13 +173,13 @@ public class NineStarNameserDefaultImpl implements NineStarNameser {
 	}
 
 	@Override
-	public void send(String sourceId, NineStarImSerResponse response) {
+	public void send(NineStarImSerResponse response) {
 		Set<String> serverIds = clients.keySet();
 		for (String serverId : serverIds) {
 			if (serverId.equals(this.currentServer.getServerId())) {
-				sendCurrentServer(sourceId, null, response);
+				sendCurrentServer(null, response);
 			} else {
-				send(sourceId, serverId, null, response);
+				send(serverId, null, response);
 			}
 		}
 	}
