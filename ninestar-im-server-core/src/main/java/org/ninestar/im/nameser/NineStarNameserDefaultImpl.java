@@ -183,4 +183,14 @@ public class NineStarNameserDefaultImpl implements NineStarNameser {
 			}
 		}
 	}
+	
+	@Override
+	public Set<String> getServerIds() {
+		Set<String> set = new HashSet<>();
+		set.addAll(this.clients.keySet());
+		if (this.currentServer != null) {
+			set.add(this.currentServer.getServerId());
+		}
+		return set;
+	}
 }

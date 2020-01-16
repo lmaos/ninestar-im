@@ -1,5 +1,8 @@
 package org.ninestar.im.nameser;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.ninestar.im.client.NineStarImClient;
 import org.ninestar.im.server.NineStarImSerResponse;
 import org.ninestar.im.server.NineStarImServer;
@@ -42,6 +45,13 @@ public class NineStarLocalRegister implements NineStarNameser, Condition {
 		String[] startAnns = context.getBeanFactory().getBeanNamesForAnnotation(NineStarServerRegister.class);
 		
 		return startAnns == null || startAnns.length == 0;
+	}
+
+	@Override
+	public Set<String> getServerIds() {
+		Set<String> set = new HashSet<>();
+		set.add(this.server.getServerId());
+		return set;
 	}
 
 }
