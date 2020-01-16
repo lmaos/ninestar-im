@@ -7,12 +7,14 @@ import org.ninestar.im.client.NineStarImClient;
 import org.ninestar.im.server.NineStarImSerResponse;
 import org.ninestar.im.server.NineStarImServer;
 import org.ninestar.im.server.anns.NineStarServerRegister;
-import org.ninestar.im.server.config.EnableNineStarImServer;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.stereotype.Component;
+/**
+ * 不存在远程注册服务的时候这个会被注册
+ */
 @Conditional(NineStarLocalRegister.class)
 @Component
 public class NineStarLocalRegister implements NineStarNameser, Condition {

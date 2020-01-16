@@ -21,7 +21,9 @@ import org.springframework.context.annotation.ImportAware;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.AnnotationMetadata;
-
+/**
+ * 服务器启动的Spring管理方式
+ */
 @Configuration
 @Conditional(RunNineStarImServer.class)
 public class RunNineStarImServer implements InitializingBean, ImportAware, Condition, ApplicationContextAware {
@@ -41,10 +43,12 @@ public class RunNineStarImServer implements InitializingBean, ImportAware, Condi
 	
 	@Resource
 	NineStarServerProperties serverProperties;
-	
+	/**
+	 * 创建 NineStarImServer
+	 * @return
+	 */
 	@Bean
 	NineStarImServer nineStarImServer() {
-//		NineStarServerProperties serverProperties = appl
 		Map<String, Object> values = importingClassMetadata.getAnnotationAttributes(EnableNineStarImServer.class.getName());
 		int port = (int) values.get("port");
 		String host = (String) values.get("host");
@@ -71,7 +75,7 @@ public class RunNineStarImServer implements InitializingBean, ImportAware, Condi
 	@Override
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String[] startAnns = context.getBeanFactory().getBeanNamesForAnnotation(EnableNineStarImServer.class);
-
+		// 仅仅在@EnableNineStarImServer注解存在的时候使用
 		return startAnns != null && startAnns.length > 0;
 	}
 }

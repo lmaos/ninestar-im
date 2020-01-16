@@ -34,7 +34,10 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-
+/**
+ * 九星消息服务器
+ *
+ */
 public class NineStarImServer extends ChannelInitializer<SocketChannel>
 		implements InitializingBean, ApplicationContextAware {
 	
@@ -65,7 +68,10 @@ public class NineStarImServer extends ChannelInitializer<SocketChannel>
 	public NineStarImServer() {
 		
 	}
-
+	/**
+	 * 注册服务
+	 * @param nineStarNameser
+	 */
 	public void register(NineStarNameser nineStarNameser) {
 		this.nineStarNameser = nineStarNameser;
 		this.nineStarNameser.register(this);
@@ -93,7 +99,9 @@ public class NineStarImServer extends ChannelInitializer<SocketChannel>
 	public String getServerId() {
 		return serverId;
 	}
-
+	/**
+	 * 启动服务
+	 */
 	public void start() {
 		if (start) {
 			throw new ServerStartException();

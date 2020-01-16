@@ -1,5 +1,8 @@
 package org.ninestar.im.nameser;
-
+/**
+ * 服务器地址
+ *
+ */
 public class SerAddr {
 	private String name;
 	private String host;
