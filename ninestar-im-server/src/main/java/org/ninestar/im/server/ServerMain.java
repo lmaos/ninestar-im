@@ -16,7 +16,7 @@ public class ServerMain implements InitializingBean, ApplicationContextAware {
 
 	@Bean
 	NineStarImServer nineStarImServer() {
-		NineStarImServer nineStarImServer = new NineStarImServer(null);
+		NineStarImServer nineStarImServer = new NineStarImServer();
 		nineStarImServer.setPort(7788);
 		return nineStarImServer;
 	}
