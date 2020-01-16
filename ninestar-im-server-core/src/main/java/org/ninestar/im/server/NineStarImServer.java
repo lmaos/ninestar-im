@@ -2,6 +2,7 @@ package org.ninestar.im.server;
 
 import java.net.InetAddress;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.ninestar.im.imcoder.ImMsgDecode;
@@ -61,8 +62,8 @@ public class NineStarImServer extends ChannelInitializer<SocketChannel>
 	
 	private NineStarNameser nineStarNameser;
 	
-	public NineStarImServer(String serverId) {
-		this.serverId = serverId.replace("/", "_");
+	public NineStarImServer() {
+		
 	}
 
 	public void register(NineStarNameser nineStarNameser) {
@@ -104,9 +105,7 @@ public class NineStarImServer extends ChannelInitializer<SocketChannel>
 		if (host.isEmpty()) {
 			this.host = "localhost";
 		}
-		if (serverId == null || serverId.isEmpty()) {
-			this.serverId = "ns:" + host + ":" + port;
-		}
+		this.serverId = "ns:" + host + ":" + port + ":" + System.currentTimeMillis() / 1000 + "-" + ThreadLocalRandom.current().nextInt(10000)+"-"+ThreadLocalRandom.current().nextInt(10);	
 		
 		try {
 			this.start = true;

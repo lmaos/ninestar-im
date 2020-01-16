@@ -24,7 +24,4 @@ public @interface EnableNineStarImServer {
 	
 	String host() default "localhost";
 
-	String serverId() default "";
-	
-	String registerConnecton() default "";
 }

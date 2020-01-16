@@ -10,8 +10,6 @@ public class NineStarServerProperties {
 	private int port;
 	/** 服务地址 */
 	private String host;
-	/** 服务ID */
-	private String serverId;
 
 	public int getPort() {
 		return port;
@@ -41,21 +39,6 @@ public class NineStarServerProperties {
 
 	public void setHost(String host) {
 		this.host = host;
-	}
-
-	public String getServerId() {
-		return serverId;
-	}
-
-	public String getServerId(String def) {
-		if (serverId == null || serverId.isEmpty()) {
-			return def;
-		}
-		return serverId;
-	}
-
-	public void setServerId(String serverId) {
-		this.serverId = serverId;
 	}
 
 }

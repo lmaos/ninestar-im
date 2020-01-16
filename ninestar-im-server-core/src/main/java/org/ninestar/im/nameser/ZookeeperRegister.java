@@ -3,8 +3,10 @@ package org.ninestar.im.nameser;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -17,6 +19,7 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.ZooKeeper.States;
 import org.apache.zookeeper.data.Stat;
 import org.ninestar.im.server.NineStarImServer;
 import org.ninestar.im.utils.IPAddress;
@@ -27,25 +30,29 @@ import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
 
-public class ZookeeperRegister {
+public class ZookeeperRegister implements Watcher{
 	private ZooKeeper zk = null;
 	public final static String SERVER_CONFIG_ROOT_PATH = "/server";
 	public final static String SERVER_CONFIG_ADDR_PATH = "/server/addrs";
+	
+	public Map<String, String> ephemeralNodes = new HashMap<String, String>();
 
 	private static final Logger log = LoggerFactory.getLogger(ZookeeperRegister.class);
 	private static ScheduledExecutorService exec = Executors.newScheduledThreadPool(1,
 			new Named("zookeeperRegister", true));
 	private Map<String, List<SerAddr>> serverAddrs = new ConcurrentHashMap<>();
-
+	private String connectString;
+	int sessionTimeout;
 	public ZookeeperRegister(String connectString, int sessionTimeout) throws IOException {
+		this.connectString = connectString;
+		this.sessionTimeout = sessionTimeout;
 		CountDownLatch cd = new CountDownLatch(1);
-		zk = new ZooKeeper(connectString, sessionTimeout, new Watcher() {
-			@Override
-			public void process(WatchedEvent event) {
-				if (event.getState() == KeeperState.SyncConnected) {
-					cd.countDown();
-				} 
+		zk = new ZooKeeper(connectString, sessionTimeout, event -> {
+			KeeperState state = event.getState();
+			if (state == KeeperState.SyncConnected) {
+				cd.countDown();
 			}
+			this.process(event);
 		});
 		try {
 			cd.await();
@@ -64,6 +71,11 @@ public class ZookeeperRegister {
 
 	private void initServer() {
 		try {
+			
+			if (zk.getState() != States.CONNECTED) {
+				zk = new ZooKeeper(connectString, sessionTimeout , this) ;
+				log.info("zookeeper 重连");
+			}
 
 			Map<String, List<SerAddr>> serverAddrs = new ConcurrentHashMap<>();
 			List<String> serverIds = zk.getChildren(SERVER_CONFIG_ADDR_PATH, false);
@@ -90,9 +102,17 @@ public class ZookeeperRegister {
 		try {
 			Stat stat = zk.exists(path, false);
 			if (stat == null) {
+				if (createMode == CreateMode.EPHEMERAL) {
+					this.ephemeralNodes.put(path, data);
+				}
 				zk.create(path, data.getBytes("UTF-8"), Ids.OPEN_ACL_UNSAFE, createMode);
 			} else {
-				zk.setData(path, data.getBytes("UTF-8"), stat.getVersion());
+				if (createMode == CreateMode.EPHEMERAL || createMode == CreateMode.EPHEMERAL_SEQUENTIAL) {
+					zk.delete(path, stat.getVersion());
+					zk.create(path, data.getBytes("UTF-8"), Ids.OPEN_ACL_UNSAFE, createMode);
+				} else {
+					zk.setData(path, data.getBytes("UTF-8"), stat.getVersion());
+				}
 			}
 		} catch (Exception e) {
 			log.error("创建或修改节点发生异常", e);
@@ -203,5 +223,24 @@ public class ZookeeperRegister {
 
 	public Map<String, List<SerAddr>> getServerAddrs() {
 		return serverAddrs;
+	}
+
+	@Override
+	public void process(WatchedEvent event) {
+		KeeperState state = event.getState();
+		if (state == KeeperState.SyncConnected) {
+			for (Entry<String, String> entry : ephemeralNodes.entrySet()) {
+				deleteNode(entry.getKey());
+				createNode(entry.getKey(), entry.getValue(), CreateMode.EPHEMERAL);
+			}
+		} else if (state == KeeperState.Expired) {
+	        try {
+	        	zk = new ZooKeeper(connectString, sessionTimeout , (e)->{}) ;
+	        	log.info("zookeeper 重连");
+	        } catch (Exception e) {
+	        	log.error("重连失败:" , e);
+	        }
+		}
+		
 	}
 }

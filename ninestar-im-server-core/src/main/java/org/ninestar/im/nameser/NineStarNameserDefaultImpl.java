@@ -36,7 +36,7 @@ public class NineStarNameserDefaultImpl implements NineStarNameser {
 
 	public NineStarNameserDefaultImpl(String connectString) {
 		try {
-			zookeeperRegister = new ZookeeperRegister(connectString, 20000); 
+			zookeeperRegister = new ZookeeperRegister(connectString, 3000); 
 		} catch (Exception e) {
 			throw new NineStarNameserException("zookeeper fail", e);
 		}

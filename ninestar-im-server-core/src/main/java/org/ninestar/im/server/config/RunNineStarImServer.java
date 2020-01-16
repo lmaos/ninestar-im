@@ -48,16 +48,11 @@ public class RunNineStarImServer implements InitializingBean, ImportAware, Condi
 		Map<String, Object> values = importingClassMetadata.getAnnotationAttributes(EnableNineStarImServer.class.getName());
 		int port = (int) values.get("port");
 		String host = (String) values.get("host");
-		String serverId = (String) values.get("serverId");
 		if (serverProperties != null) {
 			port = serverProperties.getPort(port);
 			host = serverProperties.getHost(host);
-			serverId = serverProperties.getServerId(serverId);
 		}
-		if (serverId.isEmpty()) {
-			serverId = env.getProperty("spring.application.name", "");
-		}
-		NineStarImServer server = new NineStarImServer(serverId);
+		NineStarImServer server = new NineStarImServer();
 		server.setPort(port);
 		server.setHost(host);
 		return server;
